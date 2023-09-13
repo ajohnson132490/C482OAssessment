@@ -1,0 +1,25 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Sep 9, 2023, 2:03:46 PM
+    Author     : austinjohnson
+*/
+.mainFormPane {
+    -fx-pref-width: 1000;
+    -fx-pref-height: 250;
+    -fx-padding: 40;
+    -fx-hgap: 50;
+    -fx-vgap: 10;
+}
+
+.mainFormTablePane {
+    -fx-pref-width: 425;
+    -fx-pref-height: 150;
+    -fx-padding: 20;
+    -fx-border-color: black;
+    -fx-background-insets: 10 10 10 10;
+    -fx-border-radius: 0.5em;
+}
+
