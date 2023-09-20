@@ -27,7 +27,7 @@ public class MainApp extends Application {
     int curID = 0;
     
     //Private Tables
-    private TableView partsTable = new TableView();
+    private TableView partsTable;
     private TableView productsTable = new TableView();
     
     @Override
@@ -101,7 +101,9 @@ public class MainApp extends Application {
         
         //Fill the middle
         //Populate the Parts Table Columns
-        TableColumn partIDCol = new TableColumn("Part ID");
+        if (partsTable == null) {
+            partsTable = new TableView();
+            TableColumn partIDCol = new TableColumn("Part ID");
         partIDCol.setMaxWidth(75);
         partIDCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         TableColumn partNameCol = new TableColumn("Part Name");
@@ -110,10 +112,12 @@ public class MainApp extends Application {
         invLevelCol.setCellValueFactory(new PropertyValueFactory<>("stock"));
         invLevelCol.setMinWidth(100);
         TableColumn priceCol = new TableColumn("Price/ Cost per Unit");
-        partIDCol.setCellValueFactory(new PropertyValueFactory<>("price"));
-        priceCol.setMinWidth(150);
+        priceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
+        priceCol.setMinWidth(145);
         partsTable.setMinSize(400, 150);        
         partsTable.getColumns().addAll(partIDCol, partNameCol, invLevelCol, priceCol);
+        }
+        
         
         //TODO
         /*
