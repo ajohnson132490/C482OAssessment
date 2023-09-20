@@ -14,6 +14,14 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     -fx-vgap: 10;
 }
 
+.partFormPane {
+    -fx-pref-width: 375;
+    -fx-pref-height: 375;
+    -fx-padding: 40;
+    -fx-hgap: 50;
+    -fx-vgap: 10;
+}
+
 .mainFormTablePane {
     -fx-pref-width: 425;
     -fx-pref-height: 150;
