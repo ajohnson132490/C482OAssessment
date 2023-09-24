@@ -31,6 +31,15 @@ public class Product {
         this.parts = parts;
     }
     
+    public Product() {
+        this.id = 0;
+        this.name = "null";
+        this.stock = 1;
+        this.price = 0;
+        this.max = 1;
+        this.min = 0;
+    }
+    
     public int getId() {
         return id;
     }
