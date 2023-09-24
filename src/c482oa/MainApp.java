@@ -3,6 +3,7 @@ package c482oa;
 import c482oa.resources.InHouse;
 import c482oa.resources.Outsourced;
 import c482oa.resources.Part;
+import c482oa.resources.Product;
 import javafx.scene.control.*;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
@@ -27,11 +28,12 @@ import javafx.scene.layout.HBox;
 public class MainApp extends Application {
     //Global lists and variables
     ObservableList<Part> partList = FXCollections.observableArrayList();
+    ObservableList<Product> productList = FXCollections.observableArrayList();
     int curID = 1;
     
     //Private Tables
     private TableView<Part> partsTable;
-    private TableView productsTable = new TableView();
+    private TableView<Product> productsTable;
     
     @Override
     public void start(Stage applicationStage) { 
@@ -102,32 +104,24 @@ public class MainApp extends Application {
         //Add items to top
         top.getChildren().addAll(title, search);
         
-        //Fill the middle
+        ///Fill the middle
         //Populate the Parts Table Columns
         if (partsTable == null) {
             partsTable = new TableView();
             TableColumn partIDCol = new TableColumn("Part ID");
-        partIDCol.setMaxWidth(75);
-        partIDCol.setCellValueFactory(new PropertyValueFactory<>("id"));
-        TableColumn partNameCol = new TableColumn("Part Name");
-        partNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
-        TableColumn invLevelCol = new TableColumn("Inventory Level");
-        invLevelCol.setCellValueFactory(new PropertyValueFactory<>("stock"));
-        invLevelCol.setMinWidth(100);
-        TableColumn priceCol = new TableColumn("Price/ Cost per Unit");
-        priceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
-        priceCol.setMinWidth(140);
-        partsTable.setMinSize(400, 150);        
-        partsTable.getColumns().addAll(partIDCol, partNameCol, invLevelCol, priceCol);
+            partIDCol.setMaxWidth(75);
+            partIDCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+            TableColumn partNameCol = new TableColumn("Part Name");
+            partNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+            TableColumn invLevelCol = new TableColumn("Inventory Level");
+            invLevelCol.setCellValueFactory(new PropertyValueFactory<>("stock"));
+            invLevelCol.setMinWidth(100);
+            TableColumn priceCol = new TableColumn("Price/ Cost per Unit");
+            priceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
+            priceCol.setMinWidth(140);
+            partsTable.setMinSize(400, 150);        
+            partsTable.getColumns().addAll(partIDCol, partNameCol, invLevelCol, priceCol);
         }
-        
-        
-        //TODO
-        /*
-        *
-        * Add data from a global list of parts to the table
-        *
-        */
         
         partsTable.setItems(partList);
         
@@ -176,6 +170,77 @@ public class MainApp extends Application {
         //Return the Parts Pane
         return pane;
     }
+    public GridPane partPaneGenerator() {
+        GridPane pane = new GridPane();
+        pane.setVgap(10);
+        
+        ///Fill the top
+        //Create a hbox container
+        HBox top = new HBox(200);
+        
+        //Create the Label
+        Label title = new Label("Parts");
+        
+        //Create search box
+        TextField search = new TextField();
+        search.setPromptText("Search by Part ID or Name");
+        search.setFocusTraversable(false);
+        
+        //TODO
+        /*
+        *
+        * Make search work
+        *
+        */
+        
+        //Add items to top
+        top.getChildren().addAll(title, search);
+        
+        ///Fill the middle
+        //Populate the Parts Table Columns
+        if (partsTable == null) {
+            partsTable = new TableView();
+            TableColumn partIDCol = new TableColumn("Part ID");
+            partIDCol.setMaxWidth(75);
+            partIDCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+            TableColumn partNameCol = new TableColumn("Part Name");
+            partNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+            TableColumn invLevelCol = new TableColumn("Inventory Level");
+            invLevelCol.setCellValueFactory(new PropertyValueFactory<>("stock"));
+            invLevelCol.setMinWidth(100);
+            TableColumn priceCol = new TableColumn("Price/ Cost per Unit");
+            priceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
+            priceCol.setMinWidth(140);
+            partsTable.setMinSize(400, 150);        
+            partsTable.getColumns().addAll(partIDCol, partNameCol, invLevelCol, priceCol);
+        }
+        
+        partsTable.setItems(partList);
+        
+        
+        ///Fill the bottom
+        //Create a hbox container
+        HBox bottom = new HBox(10);
+        bottom.setPadding(new Insets(0, 0, 0, 225));
+        
+        //Create buttoms
+        Button addBtn = new Button("Add");
+        EventHandler<ActionEvent> addEvent = (ActionEvent e) -> {
+        };
+        addBtn.setOnAction(addEvent);
+        
+        //Add buttons to bottom
+        bottom.getChildren().add(addBtn);
+        
+        //Add all contents to Parts Pane
+        pane.add(top, 0, 0);
+        pane.add(partsTable, 0, 1);
+        pane.add(bottom, 0, 2);
+        
+        //Return the Parts Pane
+        return pane;
+    }
+
     public GridPane productPaneGenerator(Stage applicationStage) {
         GridPane pane = new GridPane();
         pane.setVgap(10);
@@ -202,24 +267,26 @@ public class MainApp extends Application {
         //Add items to top
         top.getChildren().addAll(title, search);
         
-        //Fill the middle
-        //Populate the Products Table Columns
-        TableColumn partIDCol = new TableColumn("Part ID");
-        partIDCol.setMaxWidth(75);
-        TableColumn partNameCol = new TableColumn("Product Name");
-        TableColumn invLevelCol = new TableColumn("Inventory Level");
-        invLevelCol.setMinWidth(100);
-        TableColumn priceCol = new TableColumn("Price/ Cost per Unit");
-        priceCol.setMinWidth(150);
-        productsTable.setMinSize(400, 150);        
-        productsTable.getColumns().addAll(partIDCol, partNameCol, invLevelCol, priceCol);
+        ///Fill the middle
+        //Populate the Parts Table Columns
+        if (productsTable == null) {
+            productsTable = new TableView();
+            TableColumn productIDCol = new TableColumn("Part ID");
+            productIDCol.setMaxWidth(75);
+            productIDCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+            TableColumn productNameCol = new TableColumn("Part Name");
+            productNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+            TableColumn invLevelCol = new TableColumn("Inventory Level");
+            invLevelCol.setCellValueFactory(new PropertyValueFactory<>("stock"));
+            invLevelCol.setMinWidth(100);
+            TableColumn priceCol = new TableColumn("Price/ Cost per Unit");
+            priceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
+            priceCol.setMinWidth(140);
+            productsTable.setMinSize(400, 150);        
+            productsTable.getColumns().addAll(productIDCol, productNameCol, invLevelCol, priceCol);
+        }
         
-        //TODO
-        /*
-        *
-        * Add data from a global list of products to the table
-        *
-        */
+        productsTable.setItems(productList);
         
         ///Fill the bottom
         //Create a hbox container
@@ -228,8 +295,25 @@ public class MainApp extends Application {
         
         //Create buttoms
         Button addBtn = new Button("Add");
+        EventHandler<ActionEvent> addEvent = (ActionEvent e) -> {
+            addProductForm(applicationStage);
+        };
+        addBtn.setOnAction(addEvent);
         Button modifyBtn = new Button("Modify");
+        EventHandler<ActionEvent> modEvent = (ActionEvent e) -> {
+            Product p = productsTable.getSelectionModel().getSelectedItem();
+            //modifyProductForm(applicationStage, p);
+
+        };
+        modifyBtn.setOnAction(modEvent);
         Button deleteBtn = new Button("Delete");
+        EventHandler<ActionEvent> delEvent = (ActionEvent e) -> {
+            Product p = productsTable.getSelectionModel().getSelectedItem();
+            int i = productList.indexOf(p);
+            productList.remove(i, i+1);
+
+        };
+        deleteBtn.setOnAction(delEvent);
         
         //Add buttons to bottom
         bottom.getChildren().addAll(addBtn, modifyBtn, deleteBtn);
@@ -721,5 +805,72 @@ public class MainApp extends Application {
         Scene tmp = new Scene(root);
         applicationStage.setScene(tmp);
         applicationStage.show(); 
+    }
+
+    ///Products Forms
+    void addProductForm(Stage applicationStage) {
+        GridPane root = new GridPane();
+        root.getStyleClass().add("productFormPane");
+        GridPane left = new GridPane();
+        GridPane right = new GridPane();
+        
+        ///Left GridPane
+        //Add title
+        HBox top = new HBox();
+        Label title = new Label("Add Product");
+        top.getChildren().add(title);
+        left.add(top, 0, 0);
+        
+        //Add Form
+        GridPane leftInner = new GridPane();
+        leftInner.setVgap(15);
+        leftInner.setHgap(10);
+        
+        Label id = new Label("ID");
+        Label name = new Label("Name");
+        Label inv = new Label("Inv");
+        Label price = new Label("Price");
+        Label max = new Label("Max");
+        Label min = new Label("Min");
+        
+        TextField idField = new TextField("Auto Gen - Disabled");
+        idField.setEditable(false);
+        TextField nameField = new TextField();
+        TextField invField = new TextField();
+        TextField priceField = new TextField();
+        TextField maxField = new TextField();
+        TextField minField = new TextField();
+        
+        leftInner.add(id, 0, 0);
+        leftInner.add(idField, 1, 0);
+        leftInner.add(name, 0, 1);
+        leftInner.add(nameField, 1, 1);
+        leftInner.add(inv, 0, 2);
+        leftInner.add(invField, 1,2);
+        leftInner.add(price, 0, 3);
+        leftInner.add(priceField, 1, 3);
+        leftInner.add(max, 0, 4);
+        leftInner.add(maxField, 1, 4);
+        leftInner.add(min, 2, 4);
+        leftInner.add(minField, 3, 4);
+        
+        
+        left.add(leftInner, 0, 1);
+        
+        GridPane partPane = partPaneGenerator();
+        partPane.getStyleClass().add("addProductTablePane");
+        right.add(partPane, 0,0);
+       
+        //Add GridPanes to root, then add to scene
+        root.add(left, 0, 0);
+        root.add(right, 1, 0);
+        root.getStylesheets().add(getClass().getResource("resources/stylesheet.css").toExternalForm());
+
+        //Change the scene
+        Scene tmp = new Scene(root);
+        applicationStage.setScene(tmp);
+        applicationStage.show();
+        
+        
     }
 }

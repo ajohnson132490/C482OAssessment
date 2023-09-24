@@ -14,14 +14,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     -fx-vgap: 10;
 }
 
-.partFormPane {
-    -fx-pref-width: 375;
-    -fx-pref-height: 375;
-    -fx-padding: 40;
-    -fx-hgap: 50;
-    -fx-vgap: 10;
-}
-
 .mainFormTablePane {
     -fx-pref-width: 425;
     -fx-pref-height: 150;
@@ -31,3 +23,30 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     -fx-border-radius: 0.5em;
 }
 
+.partFormPane {
+    -fx-pref-width: 375;
+    -fx-pref-height: 375;
+    -fx-padding: 40;
+    -fx-hgap: 50;
+    -fx-vgap: 10;
+}
+
+.productFormPane {
+    -fx-pref-width: 800;
+    -fx-pref-height: 475;
+    -fx-padding: 40;
+    -fx-hgap: 50;
+    -fx-vgap: 10;
+    -fx-border-color: black;
+    -fx-background-insets: 10 10 10 10;
+    -fx-border-radius: 0.5em;
+    
+}
+
+.addProductTablePane {
+    -fx-pref-width: 375;
+    -fx-pref-height: 375;
+    -fx-padding: 40;
+    -fx-hgap: 50;
+    -fx-vgap: 10;
+}
