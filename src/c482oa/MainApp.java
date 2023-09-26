@@ -1,13 +1,9 @@
 package c482oa;
 
-import c482oa.resources.InHouse;
-import c482oa.resources.Outsourced;
-import c482oa.resources.Part;
-import c482oa.resources.Product;
+import c482oa.resources.*;
 import javafx.scene.control.*;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -38,6 +34,16 @@ public class MainApp extends Application {
     private TableView<Product> productsTable;
     private TableView<Part> subProductsTable;
     
+    /**
+    * Sets the window title and loads the main form.
+    * 
+    * <p>
+    * This method always returns immediately, whether or not the 
+    * main form loads.
+    *
+    * @param  applicationStage  an absolute URL giving the base location of the image
+    * @see         JavaFX
+    */
     @Override
     public void start(Stage applicationStage) { 
         applicationStage.setTitle("Inventory Management System"); // Set window's title
@@ -375,7 +381,7 @@ public class MainApp extends Application {
         
         //Generate all text boxes
         TextField idField = new TextField("Auto Gen - Disabled");
-        idField.setEditable(false);
+        idField.setDisable(true);
         idField.setMinWidth(150);
         TextField nameField = new TextField();
         TextField invField = new TextField();
@@ -534,7 +540,7 @@ public class MainApp extends Application {
         
         //Generate all text boxes
         TextField idField = new TextField(Integer.toString(curPart.getId()));
-        idField.setEditable(false);
+        idField.setDisable(true);
         idField.setMinWidth(150);
         TextField nameField = new TextField(curPart.getName());
         TextField invField = new TextField(Integer.toString(curPart.getStock()));
@@ -693,7 +699,7 @@ public class MainApp extends Application {
         
         //Generate all text boxes
         TextField idField = new TextField(Integer.toString(curPart.getId()));
-        idField.setEditable(false);
+        idField.setDisable(true);
         idField.setMinWidth(150);
         TextField nameField = new TextField(curPart.getName());
         TextField invField = new TextField(Integer.toString(curPart.getStock()));
@@ -847,7 +853,7 @@ public class MainApp extends Application {
         //Text Fields for form
         TextField idField = new TextField("Auto Gen - Disabled");
         idField.setMaxWidth(150);
-        idField.setEditable(false);
+        idField.setDisable(true);
         TextField nameField = new TextField();
         nameField.setMaxWidth(150);
         TextField invField = new TextField();
@@ -1005,7 +1011,7 @@ public class MainApp extends Application {
         //Text Fields for form
         TextField idField = new TextField(Integer.toString(p.getId()));
         idField.setMaxWidth(150);
-        idField.setEditable(false);
+        idField.setDisable(true);
         TextField nameField = new TextField(p.getName());
         nameField.setMaxWidth(150);
         TextField invField = new TextField(Integer.toString(p.getStock()));
