@@ -41,7 +41,7 @@ public class MainApp extends Application {
     * This method always returns immediately, whether or not the 
     * main form loads.
     *
-    * @param  applicationStage  an absolute URL giving the base location of the image
+    * @param  applicationStage  the top level container of the GUI
     * @see         JavaFX
     */
     @Override
@@ -51,14 +51,28 @@ public class MainApp extends Application {
     }
     
     /**
-     * @param args the command line arguments
-     */
+    * Main function that starts the program accounting for
+    * command line arguments.
+    *
+    * @param args the command line arguments
+    */
     public static void main(String[] args) {
         launch(args);
     }
     
-    ///Main Form
-    //Generates the main page
+    /**
+    * This is the home page of the application. It contains an overview of all
+    * products and parts, as well as options to add, modify, or delete all
+    * products and parts.
+    * 
+    * <p>
+    * This method utilizes helper functions to generate the parts table and product table
+    * to limit the number of lines per function in the program.
+    *
+    * @param  applicationStage  the top level container of the GUI
+    * @see partPaneGenerator(Stage applicationStage)
+    * @see productPaneGenerator(Stage applicationStage)
+    */
     void mainForm(Stage applicationStage) {
         //Create Root Pane
         GridPane root = new GridPane();
@@ -86,7 +100,15 @@ public class MainApp extends Application {
         applicationStage.show(); 
     }
     
-    //Helper functions for mainForm
+    /**
+    * This is one of the helper functions for the main form. It generates a table
+    * based on the global list "partList".
+    * <p>
+    * It also give the user the ability to add, modify, or delete parts.
+    *
+    * @param  applicationStage  the top level container of the GUI
+    * @see mainForm(Stage applicationStage)
+    */
     public GridPane partPaneGenerator(Stage applicationStage) {
         GridPane pane = new GridPane();
         pane.setVgap(10);
@@ -179,6 +201,17 @@ public class MainApp extends Application {
         //Return the Parts Pane
         return pane;
     }
+
+    /**
+    * This method generates a table that can add parts from the list "partList"
+    * to a product's part list.
+    * <p>
+    * This is an overloaded version of partPaneGenerator specifcally designed for the
+    * add and modify product forms.
+    *
+    * @param  p  the product that you are adding/modifying
+    * @see partPaneGenerator(Stage applicationStage)
+    */
     public GridPane partPaneGenerator(Product p) {
         GridPane pane = new GridPane();
         pane.setVgap(10);
@@ -252,6 +285,15 @@ public class MainApp extends Application {
         return pane;
     }
 
+    /**
+    * This is one of the helper functions for the main form. It generates a table
+    * based on the global list "productList".
+    * <p>
+    * It also give the user the ability to add, modify, or delete products.
+    *
+    * @param  applicationStage  the top level container of the GUI
+    * @see mainForm(Stage applicationStage)
+    */
     public GridPane productPaneGenerator(Stage applicationStage) {
         GridPane pane = new GridPane();
         pane.setVgap(10);
@@ -338,8 +380,13 @@ public class MainApp extends Application {
         return pane;
     }
     
-    ///Parts Forms
-    //Add Part Form
+    /**
+    * This form allows the user to add a new part to the "partList" list.
+    * The part is not saved until the user presses the save button.
+    *
+    * @param  applicationStage  the top level container of the GUI
+    * @see partPaneGenerator(Stage applicationStage)
+    */
     void addPartForm(Stage applicationStage) {
         GridPane root = new GridPane();
         root.getStyleClass().add("partFormPane");
@@ -499,6 +546,15 @@ public class MainApp extends Application {
         applicationStage.setScene(tmp);
         applicationStage.show(); 
     }
+
+    /**
+    * This form allows the user to modify existing in-house parts. It prepopulates
+    * all fields based on the part's current values.
+    *
+    * @param  applicationStage  the top level container of the GUI
+    * @param  curPart           the current part being modified
+    * @see partPaneGenerator(Stage applicationStage)
+    */
     void modifyPartForm(Stage applicationStage, InHouse curPart) {
         GridPane root = new GridPane();
         root.getStyleClass().add("partFormPane");
@@ -658,6 +714,15 @@ public class MainApp extends Application {
         applicationStage.setScene(tmp);
         applicationStage.show(); 
     }
+
+    /**
+    * This form allows the user to modify existing oursourced parts. It prepopulates
+    * all fields based on the part's current values.
+    *
+    * @param  applicationStage  the top level container of the GUI
+    * @param  curPart           the current part being modified
+    * @see partPaneGenerator(Stage applicationStage)
+    */
     void modifyPartForm(Stage applicationStage, Outsourced curPart) {
         GridPane root = new GridPane();
         root.getStyleClass().add("partFormPane");
@@ -818,7 +883,15 @@ public class MainApp extends Application {
         applicationStage.show(); 
     }
 
-    ///Products Forms
+    /**
+    * This form allows the user to add a new product.
+    * <p>
+    * This function utilizes partPaneGenerator to generate the
+    * list of parts available for the product.
+    *
+    * @param  applicationStage  the top level container of the GUI
+    * @see productPaneGenerator(Product p)
+    */
     void addProductForm(Stage applicationStage) {
         //Create main grid panes
         GridPane root = new GridPane();
@@ -980,6 +1053,18 @@ public class MainApp extends Application {
         
         
     }
+
+    /**
+    * This form allows the user to modify an existing product.
+    * It prepopulates all fields with the current product data.
+    * <p>
+    * This function utilizes partPaneGenerator to generate the
+    * list of parts available for the product.
+    *
+    * @param  applicationStage  the top level container of the GUI
+    * @param  p                 the product being modified
+    * @see productPaneGenerator(Product p)
+    */
     void modifyProductForm(Stage applicationStage, Product p) {
         //Create main grid panes
         GridPane root = new GridPane();
