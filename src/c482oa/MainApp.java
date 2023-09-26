@@ -1,13 +1,9 @@
 package c482oa;
 
-import c482oa.resources.InHouse;
-import c482oa.resources.Outsourced;
-import c482oa.resources.Part;
-import c482oa.resources.Product;
+import c482oa.resources.*;
 import javafx.scene.control.*;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -30,6 +26,7 @@ public class MainApp extends Application {
     ObservableList<Part> partList = FXCollections.observableArrayList();
     ObservableList<Product> productList = FXCollections.observableArrayList();
     int curID = 1;
+    int curProdID = 1;
     
     //Private Tables
     private TableView<Part> partsTable;
@@ -37,6 +34,16 @@ public class MainApp extends Application {
     private TableView<Product> productsTable;
     private TableView<Part> subProductsTable;
     
+    /**
+    * Sets the window title and loads the main form.
+    * 
+    * <p>
+    * This method always returns immediately, whether or not the 
+    * main form loads.
+    *
+    * @param  applicationStage  the top level container of the GUI
+    * @see         JavaFX
+    */
     @Override
     public void start(Stage applicationStage) { 
         applicationStage.setTitle("Inventory Management System"); // Set window's title
@@ -44,14 +51,28 @@ public class MainApp extends Application {
     }
     
     /**
-     * @param args the command line arguments
-     */
+    * Main function that starts the program accounting for
+    * command line arguments.
+    *
+    * @param args the command line arguments
+    */
     public static void main(String[] args) {
         launch(args);
     }
     
-    ///Main Form
-    //Generates the main page
+    /**
+    * This is the home page of the application. It contains an overview of all
+    * products and parts, as well as options to add, modify, or delete all
+    * products and parts.
+    * 
+    * <p>
+    * This method utilizes helper functions to generate the parts table and product table
+    * to limit the number of lines per function in the program.
+    *
+    * @param  applicationStage  the top level container of the GUI
+    * @see partPaneGenerator(Stage applicationStage)
+    * @see productPaneGenerator(Stage applicationStage)
+    */
     void mainForm(Stage applicationStage) {
         //Create Root Pane
         GridPane root = new GridPane();
@@ -79,7 +100,15 @@ public class MainApp extends Application {
         applicationStage.show(); 
     }
     
-    //Helper functions for mainForm
+    /**
+    * This is one of the helper functions for the main form. It generates a table
+    * based on the global list "partList".
+    * <p>
+    * It also give the user the ability to add, modify, or delete parts.
+    *
+    * @param  applicationStage  the top level container of the GUI
+    * @see mainForm(Stage applicationStage)
+    */
     public GridPane partPaneGenerator(Stage applicationStage) {
         GridPane pane = new GridPane();
         pane.setVgap(10);
@@ -172,6 +201,17 @@ public class MainApp extends Application {
         //Return the Parts Pane
         return pane;
     }
+
+    /**
+    * This method generates a table that can add parts from the list "partList"
+    * to a product's part list.
+    * <p>
+    * This is an overloaded version of partPaneGenerator specifcally designed for the
+    * add and modify product forms.
+    *
+    * @param  p  the product that you are adding/modifying
+    * @see partPaneGenerator(Stage applicationStage)
+    */
     public GridPane partPaneGenerator(Product p) {
         GridPane pane = new GridPane();
         pane.setVgap(10);
@@ -245,6 +285,15 @@ public class MainApp extends Application {
         return pane;
     }
 
+    /**
+    * This is one of the helper functions for the main form. It generates a table
+    * based on the global list "productList".
+    * <p>
+    * It also give the user the ability to add, modify, or delete products.
+    *
+    * @param  applicationStage  the top level container of the GUI
+    * @see mainForm(Stage applicationStage)
+    */
     public GridPane productPaneGenerator(Stage applicationStage) {
         GridPane pane = new GridPane();
         pane.setVgap(10);
@@ -306,7 +355,7 @@ public class MainApp extends Application {
         Button modifyBtn = new Button("Modify");
         EventHandler<ActionEvent> modEvent = (ActionEvent e) -> {
             Product p = productsTable.getSelectionModel().getSelectedItem();
-            //modifyProductForm(applicationStage, p);
+            modifyProductForm(applicationStage, p);
 
         };
         modifyBtn.setOnAction(modEvent);
@@ -331,8 +380,13 @@ public class MainApp extends Application {
         return pane;
     }
     
-    ///Parts Forms
-    //Add Part Form
+    /**
+    * This form allows the user to add a new part to the "partList" list.
+    * The part is not saved until the user presses the save button.
+    *
+    * @param  applicationStage  the top level container of the GUI
+    * @see partPaneGenerator(Stage applicationStage)
+    */
     void addPartForm(Stage applicationStage) {
         GridPane root = new GridPane();
         root.getStyleClass().add("partFormPane");
@@ -374,7 +428,7 @@ public class MainApp extends Application {
         
         //Generate all text boxes
         TextField idField = new TextField("Auto Gen - Disabled");
-        idField.setEditable(false);
+        idField.setDisable(true);
         idField.setMinWidth(150);
         TextField nameField = new TextField();
         TextField invField = new TextField();
@@ -449,7 +503,7 @@ public class MainApp extends Application {
             int tempInv = Integer.parseInt(invField.getText());
             int tempMax = Integer.parseInt(maxField.getText());
             int tempMin = Integer.parseInt(minField.getText());
-            if (tempMax > tempInv && tempInv > tempMin) {
+            if (tempMax >= tempInv && tempInv >= tempMin) {
                 if (inHouse.isSelected()) {
                     partList.add(new InHouse(curID, nameField.getText(), Double.parseDouble(costField.getText()),
                     tempInv, tempMin, tempMax, Integer.parseInt(machineField.getText())));
@@ -492,6 +546,15 @@ public class MainApp extends Application {
         applicationStage.setScene(tmp);
         applicationStage.show(); 
     }
+
+    /**
+    * This form allows the user to modify existing in-house parts. It prepopulates
+    * all fields based on the part's current values.
+    *
+    * @param  applicationStage  the top level container of the GUI
+    * @param  curPart           the current part being modified
+    * @see partPaneGenerator(Stage applicationStage)
+    */
     void modifyPartForm(Stage applicationStage, InHouse curPart) {
         GridPane root = new GridPane();
         root.getStyleClass().add("partFormPane");
@@ -533,7 +596,7 @@ public class MainApp extends Application {
         
         //Generate all text boxes
         TextField idField = new TextField(Integer.toString(curPart.getId()));
-        idField.setEditable(false);
+        idField.setDisable(true);
         idField.setMinWidth(150);
         TextField nameField = new TextField(curPart.getName());
         TextField invField = new TextField(Integer.toString(curPart.getStock()));
@@ -651,6 +714,15 @@ public class MainApp extends Application {
         applicationStage.setScene(tmp);
         applicationStage.show(); 
     }
+
+    /**
+    * This form allows the user to modify existing oursourced parts. It prepopulates
+    * all fields based on the part's current values.
+    *
+    * @param  applicationStage  the top level container of the GUI
+    * @param  curPart           the current part being modified
+    * @see partPaneGenerator(Stage applicationStage)
+    */
     void modifyPartForm(Stage applicationStage, Outsourced curPart) {
         GridPane root = new GridPane();
         root.getStyleClass().add("partFormPane");
@@ -692,7 +764,7 @@ public class MainApp extends Application {
         
         //Generate all text boxes
         TextField idField = new TextField(Integer.toString(curPart.getId()));
-        idField.setEditable(false);
+        idField.setDisable(true);
         idField.setMinWidth(150);
         TextField nameField = new TextField(curPart.getName());
         TextField invField = new TextField(Integer.toString(curPart.getStock()));
@@ -811,7 +883,15 @@ public class MainApp extends Application {
         applicationStage.show(); 
     }
 
-    ///Products Forms
+    /**
+    * This form allows the user to add a new product.
+    * <p>
+    * This function utilizes partPaneGenerator to generate the
+    * list of parts available for the product.
+    *
+    * @param  applicationStage  the top level container of the GUI
+    * @see productPaneGenerator(Product p)
+    */
     void addProductForm(Stage applicationStage) {
         //Create main grid panes
         GridPane root = new GridPane();
@@ -846,7 +926,7 @@ public class MainApp extends Application {
         //Text Fields for form
         TextField idField = new TextField("Auto Gen - Disabled");
         idField.setMaxWidth(150);
-        idField.setEditable(false);
+        idField.setDisable(true);
         TextField nameField = new TextField();
         nameField.setMaxWidth(150);
         TextField invField = new TextField();
@@ -907,8 +987,10 @@ public class MainApp extends Application {
         
         ///Fill the bottom
         //Create a hbox container
-        HBox bottom = new HBox(10);
-        bottom.setPadding(new Insets(0, 0, 0, 225));
+        HBox ubottom = new HBox(10);
+        ubottom.setPadding(new Insets(0, 0, 0, 225));
+        HBox bbottom = new HBox(50);
+        bbottom.setPadding(new Insets(0, 0, 0, 225));
         
         //Create buttoms
         Button removeBtn = new Button("Remove Associated Part");
@@ -918,15 +1000,185 @@ public class MainApp extends Application {
         removeBtn.setOnAction(remEvent);
         Button saveBtn = new Button("Save");
         EventHandler<ActionEvent> sveEvent = (ActionEvent e) -> {
-            if (Integer.parseInt(maxField.getText()) > Integer.parseInt(invField.getText()) &&
-                    Integer.parseInt(invField.getText()) > Integer.parseInt(minField.getText())) {
+            if (Integer.parseInt(maxField.getText()) >= Integer.parseInt(invField.getText()) &&
+                    Integer.parseInt(invField.getText()) >= Integer.parseInt(minField.getText())) {
                 //Get all data and add it to the new part
-                p.setId(Integer.parseInt(idField.getText()));
+                p.setId(curProdID);
                 p.setName(nameField.getText());
                 p.setStock(Integer.parseInt(invField.getText()));
                 p.setPrice(Double.parseDouble(priceField.getText()));
                 p.setMax(Integer.parseInt(maxField.getText()));
                 p.setMin(Integer.parseInt(minField.getText()));
+                productList.add(p);
+                curProdID++;
+                mainForm(applicationStage);
+            } else {
+                Alert error = new Alert(AlertType.ERROR);
+                error.setHeaderText("Input not valid");
+                error.setContentText("Inventory must be larger than min, and smaller than max.");
+                error.showAndWait();
+                addProductForm(applicationStage);
+            }
+            
+        };
+        saveBtn.setOnAction(sveEvent);
+        Button cancelBtn = new Button("Cancel");
+        EventHandler<ActionEvent> canEvent = (ActionEvent e) -> {
+            mainForm(applicationStage);
+        };
+        cancelBtn.setOnAction(canEvent);
+        
+        
+        //Add buttons to bottom
+        ubottom.getChildren().addAll(removeBtn);
+        bbottom.getChildren().addAll(saveBtn, cancelBtn);
+
+        
+        //Add all contents to Products Pane
+        productPane.add(subProductsTable, 0, 1);
+        productPane.add(ubottom, 0, 2);
+        productPane.add(bbottom, 0, 3);
+        right.add(productPane, 0, 1);
+
+       
+        //Add GridPanes to root, then add to scene
+        root.add(left, 0, 0);
+        root.add(right, 1, 0);
+        root.getStylesheets().add(getClass().getResource("resources/stylesheet.css").toExternalForm());
+
+        //Change the scene
+        Scene tmp = new Scene(root);
+        applicationStage.setScene(tmp);
+        applicationStage.show();
+        
+        
+    }
+
+    /**
+    * This form allows the user to modify an existing product.
+    * It prepopulates all fields with the current product data.
+    * <p>
+    * This function utilizes partPaneGenerator to generate the
+    * list of parts available for the product.
+    *
+    * @param  applicationStage  the top level container of the GUI
+    * @param  p                 the product being modified
+    * @see productPaneGenerator(Product p)
+    */
+    void modifyProductForm(Stage applicationStage, Product p) {
+        //Create main grid panes
+        GridPane root = new GridPane();
+        root.getStyleClass().add("productFormPane");
+        GridPane left = new GridPane();
+        left.setMinWidth(390);
+        GridPane right = new GridPane();
+        
+        ///Left GridPane
+        //Add title
+        HBox top = new HBox();
+        Label title = new Label("Add Product");
+        top.getChildren().add(title);
+        left.add(top, 0, 0);
+        
+        //Add Form
+        GridPane leftInner = new GridPane();
+        leftInner.setVgap(15);
+        leftInner.setHgap(10);
+        
+        //Labels for form
+        Label id = new Label("ID");
+        Label name = new Label("Name");
+        Label inv = new Label("Inv");
+        Label price = new Label("Price");
+        Label max = new Label("Max");
+        Label min = new Label("Min");
+        
+        //Text Fields for form
+        TextField idField = new TextField(Integer.toString(p.getId()));
+        idField.setMaxWidth(150);
+        idField.setDisable(true);
+        TextField nameField = new TextField(p.getName());
+        nameField.setMaxWidth(150);
+        TextField invField = new TextField(Integer.toString(p.getStock()));
+        invField.setMaxWidth(100);
+        TextField priceField = new TextField(Double.toString(p.getPrice()));
+        priceField.setMaxWidth(100);
+        TextField maxField = new TextField(Integer.toString(p.getMax()));
+        maxField.setMaxWidth(100);
+        TextField minField = new TextField(Integer.toString(p.getMin()));
+        minField.setMaxWidth(100);
+        
+        //Add parts to form
+        leftInner.add(id, 0, 0);
+        leftInner.add(idField, 1, 0);
+        leftInner.add(name, 0, 1);
+        leftInner.add(nameField, 1, 1);
+        leftInner.add(inv, 0, 2);
+        leftInner.add(invField, 1,2);
+        leftInner.add(price, 0, 3);
+        leftInner.add(priceField, 1, 3);
+        leftInner.add(max, 0, 4);
+        leftInner.add(maxField, 1, 4);
+        leftInner.add(min, 2, 4);
+        leftInner.add(minField, 3, 4);
+        
+        //Add form to left side
+        left.add(leftInner, 0, 1);
+        
+        ///Right Side
+        //Add parts pane for item selections to upper right
+        GridPane partPane = partPaneGenerator(p);
+        partPane.getStyleClass().add("addProductTablePane");
+        right.add(partPane, 0,0);
+        
+        //Add pane with current product parts lower right
+        GridPane productPane = new GridPane();
+        productPane.setVgap(10);
+        
+        //Populate the Parts Table Columns
+        if (subProductsTable == null) {
+            subProductsTable = new TableView();
+            TableColumn productIDCol = new TableColumn("Part ID");
+            productIDCol.setMaxWidth(75);
+            productIDCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+            TableColumn productNameCol = new TableColumn("Part Name");
+            productNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+            TableColumn invLevelCol = new TableColumn("Inventory Level");
+            invLevelCol.setCellValueFactory(new PropertyValueFactory<>("stock"));
+            invLevelCol.setMinWidth(100);
+            TableColumn priceCol = new TableColumn("Price/ Cost per Unit");
+            priceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
+            priceCol.setMinWidth(140);
+            subProductsTable.setMinSize(400, 150);        
+            subProductsTable.getColumns().addAll(productIDCol, productNameCol, invLevelCol, priceCol);
+        }
+        
+        subProductsTable.setItems(p.getParts());
+        
+        ///Fill the bottom
+        //Create a hbox container
+        HBox ubottom = new HBox(10);
+        ubottom.setPadding(new Insets(0, 0, 0, 225));
+        HBox bbottom = new HBox(50);
+        bbottom.setPadding(new Insets(0, 0, 0, 225));
+        
+        //Create buttoms
+        Button removeBtn = new Button("Remove Associated Part");
+        EventHandler<ActionEvent> remEvent = (ActionEvent e) -> {
+            p.removePart(subProductsTable.getSelectionModel().getSelectedItem());
+        };
+        removeBtn.setOnAction(remEvent);
+        Button saveBtn = new Button("Save");
+        EventHandler<ActionEvent> sveEvent = (ActionEvent e) -> {
+            if (Integer.parseInt(maxField.getText()) >= Integer.parseInt(invField.getText()) &&
+                    Integer.parseInt(invField.getText()) >= Integer.parseInt(minField.getText())) {
+                //Get all data and add it to the new part
+                p.setName(nameField.getText());
+                p.setStock(Integer.parseInt(invField.getText()));
+                p.setPrice(Double.parseDouble(priceField.getText()));
+                p.setMax(Integer.parseInt(maxField.getText()));
+                p.setMin(Integer.parseInt(minField.getText()));
+                productList.remove(p);
                 productList.add(p);
                 mainForm(applicationStage);
             } else {
@@ -947,11 +1199,14 @@ public class MainApp extends Application {
         
         
         //Add buttons to bottom
-        bottom.getChildren().addAll(removeBtn, saveBtn, cancelBtn);
+        ubottom.getChildren().addAll(removeBtn);
+        bbottom.getChildren().addAll(saveBtn, cancelBtn);
+
         
         //Add all contents to Products Pane
         productPane.add(subProductsTable, 0, 1);
-        productPane.add(bottom, 0, 2);
+        productPane.add(ubottom, 0, 2);
+        productPane.add(bbottom, 0, 3);
         right.add(productPane, 0, 1);
 
        
@@ -964,7 +1219,5 @@ public class MainApp extends Application {
         Scene tmp = new Scene(root);
         applicationStage.setScene(tmp);
         applicationStage.show();
-        
-        
     }
 }
