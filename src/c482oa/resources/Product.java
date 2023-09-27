@@ -39,58 +39,130 @@ public class Product {
         this.max = 1;
         this.min = 0;
     }
-    
+    /**
+     * 
+     * @return the id
+     */
     public int getId() {
         return id;
     }
+    
+    /**
+     * 
+     * @param id the new id
+     */
     public void setId(int id) {
         this.id = id;
     }
     
+    /**
+     * 
+     * @return the name
+     */
     public String getName() {
         return name;
     }
+    
+    /**
+     * 
+     * @param name the new name
+     */
     public void setName(String name) {
         this.name = name;
     }
     
+    /**
+     * 
+     * @return the stock
+     */
     public int getStock() {
         return stock;
     }
+    
+    /**
+     * 
+     * @param stock the new stock
+     */
     public void setStock(int stock) {
         this.stock = stock;
     }
     
+    /**
+     * 
+     * @return the price
+     */
     public double getPrice() {
         return price;
     }
+    
+    /**
+     * 
+     * @param price the new price
+     */
     public void setPrice(double price) {
         this.price = price;
     }
     
+    /**
+     * 
+     * @return the max stock
+     */
     public int getMax() {
         return max;
     }
+    
+    /**
+     * 
+     * @param max the new max stock
+     */
     public void setMax(int max) {
         this.max = max;
     }
     
+    /**
+     * 
+     * @return the min stock
+     */
     public int getMin(){
         return min;
     }
+    
+    /**
+     * 
+     * @param min the new min stock
+     */
     public void setMin(int min) {
         this.min = min;
     }
     
+    /**
+     * 
+     * @return all associated parts
+     */
     public ObservableList<Part> getParts() {
         return parts;
     }
+    
+    /**
+     * 
+     * @param parts associated parts list
+     */
     public void setParts(ObservableList<Part> parts) {
         this.parts = parts;
     }
+    
+    /**
+     * 
+     * @param p new part to add to parts list 
+     */
     public void addPart(Part p) {
         parts.add(p);
     }
+    
+    /**
+     * 
+     * @param p part to remove from parts list
+     */
     public void removePart(Part p) {
         parts.remove(p);
     }

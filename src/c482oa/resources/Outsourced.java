@@ -4,8 +4,6 @@
  */
 package c482oa.resources;
 
-import c482oa.resources.Part;
-
 /**
  *
  * @author austinjohnson
@@ -18,10 +16,18 @@ public class Outsourced extends Part {
         this.company = company;
     }
     
+    /**
+     * 
+     * @return company name
+     */
     public String getCompany() {
         return this.company;
     }
     
+    /**
+     * 
+     * @param company new company name
+     */
     public void setCompany(String company) {
         this.company = company;
     }
