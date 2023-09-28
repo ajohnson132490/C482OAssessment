@@ -4,6 +4,7 @@ import c482oa.resources.*;
 import javafx.scene.control.*;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -71,6 +72,10 @@ public class MainApp extends Application {
     * <p>
     * FUTURE ENHANCEMENTS: Make the products and parts tables different tabs, allowing
     * for more information on each part and product to be displayed.
+    * <p>
+    * LOGIC ERROR: When making the exit button, I tried to just add it 
+    * to the root, but I couldn't get the placement correct. What I had 
+    * to do was add the button to an HBox, and add padding to the HBox.
     *
     * @param  applicationStage  the top level container of the GUI
     * @see partPaneGenerator(Stage applicationStage)
@@ -93,8 +98,19 @@ public class MainApp extends Application {
         GridPane productPane = productPaneGenerator(applicationStage);
         productPane.getStyleClass().add("mainFormTablePane");
         
+        HBox lower = new HBox();
+        lower.setPadding(new Insets(0,0,0,400));
+        Button exitBtn = new Button("Exit");
+        EventHandler<ActionEvent> exit = (ActionEvent e) -> {
+            Platform.exit();
+        };
+        exitBtn.setOnAction(exit);
+        lower.getChildren().add(exitBtn);
+        
+        
         root.add(partPane, 0,1);
         root.add(productPane, 1, 1);
+        root.add(lower, 1, 2);
         
         root.getStylesheets().add(getClass().getResource("resources/stylesheet.css").toExternalForm());
         
@@ -111,6 +127,11 @@ public class MainApp extends Application {
     * <p>
     * FUTURE ENHANCEMENT: Filter parts by in-house or outsourced. Also display the machine 
     * id or company name.
+    * <p>
+    * LOGIC ERROR: When making the modify part button, I tried to pass the part as a
+    * generic part class, but because all parts are either in-house or outsourced,
+    * I couldn't pass the part to the modify part form, so I had make an overloaded
+    * method for in-house or outsourced parts.
     *
     * @param  applicationStage  the top level container of the GUI
     * @return table of all parts
@@ -218,6 +239,11 @@ public class MainApp extends Application {
     * <p>
     * FUTURE ENHANCEMENT: Filter parts by in-house or outsourced. Also display the machine 
     * id or company name.
+    * <p>
+    * RUNTIME ERROR: When generating the parts pane for the add/modify product form
+    * I ran into the issue of not being able to resize the table because I was trying
+    * to use the same table that I use for the main form parts pane. To solve this, I
+    * created a duplicate table, so that I could size it separately. 
     *
     * @param  p  the product that you are adding/modifying
     * @return table of all parts
@@ -304,6 +330,10 @@ public class MainApp extends Application {
     * <p>
     * FUTURE ENHANCEMENTS: Allow users to click on a product and see all related
     * parts at a glance.
+    * <p>
+    * LOGIC ERROR: When I initially created this function, I had not yet made
+    * the modify product function, which led to a logic error. I fixed this 
+    * by creating the modify product function.
     *
     * @param  applicationStage  the top level container of the GUI
     * @return table of all products
@@ -400,6 +430,12 @@ public class MainApp extends Application {
     * The part is not saved until the user presses the save button.
     * <p>
     * FUTURE ENHANCEMENT: Allow a photo of the part to be uploaded.
+    * <p>
+    * RUNTIME ERROR: I ran into an issue with getting the add part form to 
+    * update based on in-house or outsourced with machine id or company name.
+    * Instead of changing what was displayed, it added both the machine id and
+    * company name. The way I solved this was by clearing and re-rendering
+    * the whole pane based on which radio button was pressed.
     *
     * @param  applicationStage  the top level container of the GUI
     * @see partPaneGenerator(Stage applicationStage)
@@ -571,6 +607,12 @@ public class MainApp extends Application {
     * FUTURE ENHANCEMENT: Show the difference between the old part info
     * and the new part info, then make the user confirm changes before
     * it saves.
+    * <p>
+    * LOGIC ERROR: When I tried to change an in-house part to an outsourced
+    * part, there wasn't a class modifier I could use to change it over, so
+    * to change from in-house to outsourced, I had to add the new part to the
+    * list, taking all of the current parts information, then delete the current
+    * part to make sure I have no duplicates.
     *
     * @param  applicationStage  the top level container of the GUI
     * @param  curPart           the current part being modified
@@ -743,6 +785,12 @@ public class MainApp extends Application {
     * FUTURE ENHANCEMENT: Show the difference between the old part info
     * and the new part info, then make the user confirm changes before
     * it saves.
+    * <p>
+    * LOGIC ERROR: When I tried to change an outsourced part to an in-house
+    * part, there wasn't a class modifier I could use to change it over, so
+    * to change from outsourced to in-house, I had to add the new part to the
+    * list, taking all of the current parts information, then delete the current
+    * part to make sure I have no duplicates.
     *
     * @param  applicationStage  the top level container of the GUI
     * @param  curPart           the current part being modified
@@ -916,6 +964,11 @@ public class MainApp extends Application {
     * <p>
     * FUTURE ENHANCEMENT: Allow the user to add custom fields to a
     * product such as profit margin or retail price vs cost.
+    * <p>
+    * RUNTIME ERROR: When generating the product pane for the add/modify product form
+    * I ran into the issue of not being able to resize the table because I was trying
+    * to use the same table that I use for the main form products pane. To solve this, I
+    * created a duplicate table, so that I could size it separately. 
     *
     * @param  applicationStage  the top level container of the GUI
     * @see partPaneGenerator(Product p)
@@ -1091,6 +1144,11 @@ public class MainApp extends Application {
     * <p>
     * FUTURE ENHANCEMENT: Make the user confirm any changes before saving
     * the changes and returning to the home screen.
+    * <p>
+    * RUNTIME ERROR: In the table with the current products associated parts, I had
+    * trouble adding or removing parts, so I decided for modifying products, that I 
+    * wouldn't use the product pane generator function, and would build it separately
+    * in the function to allow for greater control.
     *
     * @param  applicationStage  the top level container of the GUI
     * @param  p                 the product being modified
