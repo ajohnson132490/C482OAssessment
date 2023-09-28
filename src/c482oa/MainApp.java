@@ -399,6 +399,7 @@ public class MainApp extends Application {
     * This form allows the user to add a new part to the "partList" list.
     * The part is not saved until the user presses the save button.
     * <p>
+    * FUTURE ENHANCEMENT: Allow a photo of the part to be uploaded.
     *
     * @param  applicationStage  the top level container of the GUI
     * @see partPaneGenerator(Stage applicationStage)
@@ -567,6 +568,9 @@ public class MainApp extends Application {
     * This form allows the user to modify existing in-house parts. It pre-populates
     * all fields based on the part's current values.
     * <p>
+    * FUTURE ENHANCEMENT: Show the difference between the old part info
+    * and the new part info, then make the user confirm changes before
+    * it saves.
     *
     * @param  applicationStage  the top level container of the GUI
     * @param  curPart           the current part being modified
@@ -736,6 +740,9 @@ public class MainApp extends Application {
     * This form allows the user to modify existing outsourced parts. It pre-populates
     * all fields based on the part's current values.
     * <p>
+    * FUTURE ENHANCEMENT: Show the difference between the old part info
+    * and the new part info, then make the user confirm changes before
+    * it saves.
     *
     * @param  applicationStage  the top level container of the GUI
     * @param  curPart           the current part being modified
@@ -906,6 +913,9 @@ public class MainApp extends Application {
     * <p>
     * This function utilizes partPaneGenerator to generate the
     * list of parts available for the product.
+    * <p>
+    * FUTURE ENHANCEMENT: Allow the user to add custom fields to a
+    * product such as profit margin or retail price vs cost.
     *
     * @param  applicationStage  the top level container of the GUI
     * @see partPaneGenerator(Product p)
@@ -1078,6 +1088,9 @@ public class MainApp extends Application {
     * <p>
     * This function utilizes partPaneGenerator to generate the
     * list of parts available for the product.
+    * <p>
+    * FUTURE ENHANCEMENT: Make the user confirm any changes before saving
+    * the changes and returning to the home screen.
     *
     * @param  applicationStage  the top level container of the GUI
     * @param  p                 the product being modified
