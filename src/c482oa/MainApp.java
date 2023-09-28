@@ -18,6 +18,8 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
+//JavaDoc foler is located in C482OAssessment/dist/javadoc
+
 /**
  *
  * @author austinjohnson
