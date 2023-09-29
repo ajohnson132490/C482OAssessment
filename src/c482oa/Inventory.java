@@ -24,7 +24,7 @@ import javafx.scene.layout.HBox;
  *
  * @author austinjohnson
  */
-public class MainApp extends Application {
+public class Inventory extends Application {
     //Global lists and variables
     ObservableList<Part> partList = FXCollections.observableArrayList();
     ObservableList<Product> productList = FXCollections.observableArrayList();
