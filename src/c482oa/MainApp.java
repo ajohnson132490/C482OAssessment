@@ -4,6 +4,7 @@ import c482oa.resources.*;
 import javafx.scene.control.*;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,6 +17,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+
+//JavaDoc foler is located in C482OAssessment/dist/javadoc
 
 /**
  *
@@ -42,7 +45,6 @@ public class MainApp extends Application {
     * main form loads.
     *
     * @param  applicationStage  the top level container of the GUI
-    * @see         JavaFX
     */
     @Override
     public void start(Stage applicationStage) { 
@@ -53,6 +55,7 @@ public class MainApp extends Application {
     /**
     * Main function that starts the program accounting for
     * command line arguments.
+    * <p>
     *
     * @param args the command line arguments
     */
@@ -68,12 +71,19 @@ public class MainApp extends Application {
     * <p>
     * This method utilizes helper functions to generate the parts table and product table
     * to limit the number of lines per function in the program.
+    * <p>
+    * FUTURE ENHANCEMENTS: Make the products and parts tables different tabs, allowing
+    * for more information on each part and product to be displayed.
+    * <p>
+    * LOGIC ERROR: When making the exit button, I tried to just add it 
+    * to the root, but I couldn't get the placement correct. What I had 
+    * to do was add the button to an HBox, and add padding to the HBox.
     *
     * @param  applicationStage  the top level container of the GUI
     * @see partPaneGenerator(Stage applicationStage)
     * @see productPaneGenerator(Stage applicationStage)
     */
-    void mainForm(Stage applicationStage) {
+    public void mainForm(Stage applicationStage) {
         //Create Root Pane
         GridPane root = new GridPane();
         root.getStyleClass().add("mainFormPane");
@@ -90,8 +100,19 @@ public class MainApp extends Application {
         GridPane productPane = productPaneGenerator(applicationStage);
         productPane.getStyleClass().add("mainFormTablePane");
         
+        HBox lower = new HBox();
+        lower.setPadding(new Insets(0,0,0,400));
+        Button exitBtn = new Button("Exit");
+        EventHandler<ActionEvent> exit = (ActionEvent e) -> {
+            Platform.exit();
+        };
+        exitBtn.setOnAction(exit);
+        lower.getChildren().add(exitBtn);
+        
+        
         root.add(partPane, 0,1);
         root.add(productPane, 1, 1);
+        root.add(lower, 1, 2);
         
         root.getStylesheets().add(getClass().getResource("resources/stylesheet.css").toExternalForm());
         
@@ -105,8 +126,17 @@ public class MainApp extends Application {
     * based on the global list "partList".
     * <p>
     * It also give the user the ability to add, modify, or delete parts.
+    * <p>
+    * FUTURE ENHANCEMENT: Filter parts by in-house or outsourced. Also display the machine 
+    * id or company name.
+    * <p>
+    * LOGIC ERROR: When making the modify part button, I tried to pass the part as a
+    * generic part class, but because all parts are either in-house or outsourced,
+    * I couldn't pass the part to the modify part form, so I had make an overloaded
+    * method for in-house or outsourced parts.
     *
     * @param  applicationStage  the top level container of the GUI
+    * @return table of all parts
     * @see mainForm(Stage applicationStage)
     */
     public GridPane partPaneGenerator(Stage applicationStage) {
@@ -206,10 +236,19 @@ public class MainApp extends Application {
     * This method generates a table that can add parts from the list "partList"
     * to a product's part list.
     * <p>
-    * This is an overloaded version of partPaneGenerator specifcally designed for the
+    * This is an overloaded version of partPaneGenerator specifically designed for the
     * add and modify product forms.
+    * <p>
+    * FUTURE ENHANCEMENT: Filter parts by in-house or outsourced. Also display the machine 
+    * id or company name.
+    * <p>
+    * RUNTIME ERROR: When generating the parts pane for the add/modify product form
+    * I ran into the issue of not being able to resize the table because I was trying
+    * to use the same table that I use for the main form parts pane. To solve this, I
+    * created a duplicate table, so that I could size it separately. 
     *
     * @param  p  the product that you are adding/modifying
+    * @return table of all parts
     * @see partPaneGenerator(Stage applicationStage)
     */
     public GridPane partPaneGenerator(Product p) {
@@ -290,8 +329,16 @@ public class MainApp extends Application {
     * based on the global list "productList".
     * <p>
     * It also give the user the ability to add, modify, or delete products.
+    * <p>
+    * FUTURE ENHANCEMENTS: Allow users to click on a product and see all related
+    * parts at a glance.
+    * <p>
+    * LOGIC ERROR: When I initially created this function, I had not yet made
+    * the modify product function, which led to a logic error. I fixed this 
+    * by creating the modify product function.
     *
     * @param  applicationStage  the top level container of the GUI
+    * @return table of all products
     * @see mainForm(Stage applicationStage)
     */
     public GridPane productPaneGenerator(Stage applicationStage) {
@@ -383,11 +430,19 @@ public class MainApp extends Application {
     /**
     * This form allows the user to add a new part to the "partList" list.
     * The part is not saved until the user presses the save button.
+    * <p>
+    * FUTURE ENHANCEMENT: Allow a photo of the part to be uploaded.
+    * <p>
+    * RUNTIME ERROR: I ran into an issue with getting the add part form to 
+    * update based on in-house or outsourced with machine id or company name.
+    * Instead of changing what was displayed, it added both the machine id and
+    * company name. The way I solved this was by clearing and re-rendering
+    * the whole pane based on which radio button was pressed.
     *
     * @param  applicationStage  the top level container of the GUI
     * @see partPaneGenerator(Stage applicationStage)
     */
-    void addPartForm(Stage applicationStage) {
+    public void addPartForm(Stage applicationStage) {
         GridPane root = new GridPane();
         root.getStyleClass().add("partFormPane");
       
@@ -548,14 +603,24 @@ public class MainApp extends Application {
     }
 
     /**
-    * This form allows the user to modify existing in-house parts. It prepopulates
+    * This form allows the user to modify existing in-house parts. It pre-populates
     * all fields based on the part's current values.
+    * <p>
+    * FUTURE ENHANCEMENT: Show the difference between the old part info
+    * and the new part info, then make the user confirm changes before
+    * it saves.
+    * <p>
+    * LOGIC ERROR: When I tried to change an in-house part to an outsourced
+    * part, there wasn't a class modifier I could use to change it over, so
+    * to change from in-house to outsourced, I had to add the new part to the
+    * list, taking all of the current parts information, then delete the current
+    * part to make sure I have no duplicates.
     *
     * @param  applicationStage  the top level container of the GUI
     * @param  curPart           the current part being modified
     * @see partPaneGenerator(Stage applicationStage)
     */
-    void modifyPartForm(Stage applicationStage, InHouse curPart) {
+    public void modifyPartForm(Stage applicationStage, InHouse curPart) {
         GridPane root = new GridPane();
         root.getStyleClass().add("partFormPane");
       
@@ -716,14 +781,24 @@ public class MainApp extends Application {
     }
 
     /**
-    * This form allows the user to modify existing oursourced parts. It prepopulates
+    * This form allows the user to modify existing outsourced parts. It pre-populates
     * all fields based on the part's current values.
+    * <p>
+    * FUTURE ENHANCEMENT: Show the difference between the old part info
+    * and the new part info, then make the user confirm changes before
+    * it saves.
+    * <p>
+    * LOGIC ERROR: When I tried to change an outsourced part to an in-house
+    * part, there wasn't a class modifier I could use to change it over, so
+    * to change from outsourced to in-house, I had to add the new part to the
+    * list, taking all of the current parts information, then delete the current
+    * part to make sure I have no duplicates.
     *
     * @param  applicationStage  the top level container of the GUI
     * @param  curPart           the current part being modified
     * @see partPaneGenerator(Stage applicationStage)
     */
-    void modifyPartForm(Stage applicationStage, Outsourced curPart) {
+    public void modifyPartForm(Stage applicationStage, Outsourced curPart) {
         GridPane root = new GridPane();
         root.getStyleClass().add("partFormPane");
       
@@ -888,11 +963,19 @@ public class MainApp extends Application {
     * <p>
     * This function utilizes partPaneGenerator to generate the
     * list of parts available for the product.
+    * <p>
+    * FUTURE ENHANCEMENT: Allow the user to add custom fields to a
+    * product such as profit margin or retail price vs cost.
+    * <p>
+    * RUNTIME ERROR: When generating the product pane for the add/modify product form
+    * I ran into the issue of not being able to resize the table because I was trying
+    * to use the same table that I use for the main form products pane. To solve this, I
+    * created a duplicate table, so that I could size it separately. 
     *
     * @param  applicationStage  the top level container of the GUI
-    * @see productPaneGenerator(Product p)
+    * @see partPaneGenerator(Product p)
     */
-    void addProductForm(Stage applicationStage) {
+    public void addProductForm(Stage applicationStage) {
         //Create main grid panes
         GridPane root = new GridPane();
         root.getStyleClass().add("productFormPane");
@@ -1056,16 +1139,24 @@ public class MainApp extends Application {
 
     /**
     * This form allows the user to modify an existing product.
-    * It prepopulates all fields with the current product data.
+    * It pre-populates all fields with the current product data.
     * <p>
     * This function utilizes partPaneGenerator to generate the
     * list of parts available for the product.
+    * <p>
+    * FUTURE ENHANCEMENT: Make the user confirm any changes before saving
+    * the changes and returning to the home screen.
+    * <p>
+    * RUNTIME ERROR: In the table with the current products associated parts, I had
+    * trouble adding or removing parts, so I decided for modifying products, that I 
+    * wouldn't use the product pane generator function, and would build it separately
+    * in the function to allow for greater control.
     *
     * @param  applicationStage  the top level container of the GUI
     * @param  p                 the product being modified
-    * @see productPaneGenerator(Product p)
+    * @see partPaneGenerator(Product p)
     */
-    void modifyProductForm(Stage applicationStage, Product p) {
+    public void modifyProductForm(Stage applicationStage, Product p) {
         //Create main grid panes
         GridPane root = new GridPane();
         root.getStyleClass().add("productFormPane");
