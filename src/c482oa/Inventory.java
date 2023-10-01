@@ -92,7 +92,6 @@ public class Inventory extends Application {
         Label title = new Label("Inventory Management System");
         root.getChildren().add(title);
         
-        //Redo parts tables
         
         HBox lower = new HBox();
         lower.setPadding(new Insets(0,0,0,400));
@@ -223,7 +222,6 @@ public class Inventory extends Application {
         //Return the Parts Pane
         return pane;
     }
-
     
     /**
     * This form allows the user to add a new part to the "partList" list.
