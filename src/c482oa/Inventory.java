@@ -8,6 +8,8 @@ import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.*;
 import javafx.geometry.Insets;
 import javafx.stage.Stage;
@@ -26,10 +28,10 @@ import javafx.scene.layout.HBox;
  */
 public class Inventory extends Application {
     //Global lists and variables
-    ObservableList<Part> allParts = FXCollections.observableArrayList();
-    ObservableList<Product> allProducts = FXCollections.observableArrayList();
-    int curID = 1;
-    int curProdID = 1;
+    private ObservableList<Part> allParts = FXCollections.observableArrayList();
+    private ObservableList<Product> allProducts = FXCollections.observableArrayList();
+    private int curID = 1;
+    private int curProdID = 1;
     
     //Private Tables
     private TableView<Part> partsTable;
@@ -74,7 +76,7 @@ public class Inventory extends Application {
     * @return the part whose id is partId
     */
     public Part lookupPart(int partId) {
-        for (int i = 0; i > allParts.size(); i++) {
+        for (int i = 0; i < allParts.size(); i++) {
             if (allParts.get(i).getId() == partId) {
                 return allParts.get(i);
             }
@@ -94,8 +96,8 @@ public class Inventory extends Application {
     */
     public ObservableList<Part> lookupPart(String partName) {
         ObservableList<Part> tmp = FXCollections.observableArrayList();
-        for (int i = 0; i > allParts.size(); i++) {
-            if (allParts.get(i).getName().contains(partName)) {
+        for (int i = 0; i < allParts.size(); i++) {
+            if (allParts.get(i).getName().toLowerCase().contains(partName.toLowerCase())) {
                 tmp.add(allParts.get(i));
             }
         }
@@ -172,6 +174,57 @@ public class Inventory extends Application {
         selectedProduct.setId(index);
         allProducts.add(selectedProduct);
     }
+    
+    /**
+    * Removes a given item from the allParts list
+    * 
+    * <p>
+    * FUTURE ENHANCEMENTS: It's perfect
+    *
+    * @param  selectedPart  the part to be removed
+    * @return true if part was found in allParts and removed
+    */
+    public boolean deletePart(Part selectedPart) {
+        return allParts.remove(selectedPart);
+    }
+    
+    /**
+    * Removes a given item from the allProducts list
+    * 
+    * <p>
+    * FUTURE ENHANCEMENTS: It's perfect
+    *
+    * @param  selectedProduct  the product to be removed
+    * @return true if part was found in allParts and removed
+    */
+    public boolean deleteProduct(Product selectedProduct) {
+        return allProducts.remove(selectedProduct);
+    }
+    
+    /**
+    * Returns the allParts list
+    * 
+    * <p>
+    * FUTURE ENHANCEMENTS: It's perfect
+    *
+    * @return allParts list
+    */
+    public ObservableList<Part> getAllParts() {
+        return allParts;
+    }
+    
+    /**
+    * Returns the allProducts list
+    * 
+    * <p>
+    * FUTURE ENHANCEMENTS: It's perfect
+    *
+    * @return allParts list
+    */
+    public ObservableList<Product> getAllProducts() {
+        return allProducts;
+    }
+    
     
     /**
     * Sets the window title and loads the main form.
@@ -281,25 +334,21 @@ public class Inventory extends Application {
         
         ///Fill the top
         //Create a hbox container
-        HBox top = new HBox(200);
+        HBox top = new HBox(20);
         
         //Create the Label
         Label title = new Label("Parts");
+        title.setPadding(new Insets(0, 125, 0, 0));
         
         //Create search box
         TextField search = new TextField();
         search.setPromptText("Search by Part ID or Name");
         search.setFocusTraversable(false);
-        
-        //TODO
-        /*
-        *
-        * Make search work
-        *
-        */
+        search.setFocusTraversable(false);
+        Button searchBtn = new Button("Search");
         
         //Add items to top
-        top.getChildren().addAll(title, search);
+        top.getChildren().addAll(title, search, searchBtn);
         
         ///Fill the middle
         //Populate the Parts Table Columns
@@ -320,7 +369,22 @@ public class Inventory extends Application {
             partsTable.getColumns().addAll(partIDCol, partNameCol, invLevelCol, priceCol);
         }
         
-        partsTable.setItems(partList);
+        partsTable.setItems(getAllParts());
+        
+        EventHandler<ActionEvent> searchEvent = (ActionEvent e) -> {
+        //Search for name
+        System.out.println(lookupPart(search.getText()));
+        ObservableList<Part> tmp = lookupPart(search.getText());
+        //Search for id 
+        try {
+            int id = Integer.parseInt(search.getText());
+            tmp.add(lookupPart(id));
+        } catch(NumberFormatException w) {
+            //do nothing
+        }
+        partsTable.setItems(tmp);
+        };
+        searchBtn.setOnAction(searchEvent);
         
         
         ///Fill the bottom
@@ -347,10 +411,7 @@ public class Inventory extends Application {
         modifyBtn.setOnAction(modEvent);
         Button deleteBtn = new Button("Delete");
         EventHandler<ActionEvent> delEvent = (ActionEvent e) -> {
-            Part p = partsTable.getSelectionModel().getSelectedItem();
-            int i = partList.indexOf(p);
-            partList.remove(i, i+1);
-
+            deletePart(partsTable.getSelectionModel().getSelectedItem());
         };
         deleteBtn.setOnAction(delEvent);
         
@@ -402,16 +463,10 @@ public class Inventory extends Application {
         TextField search = new TextField();
         search.setPromptText("Search by Part ID or Name");
         search.setFocusTraversable(false);
-        
-        //TODO
-        /*
-        *
-        * Make search work
-        *
-        */
+        Button searchBtn = new Button("Search");
         
         //Add items to top
-        top.getChildren().addAll(title, search);
+        top.getChildren().addAll(title, search, searchBtn);
         
         ///Fill the middle
         //Populate the Parts Table Columns
@@ -433,7 +488,24 @@ public class Inventory extends Application {
             subPartsTable.getColumns().addAll(partIDCol, partNameCol, invLevelCol, priceCol);
         }
         
-        subPartsTable.setItems(partList);
+        EventHandler<ActionEvent> searchEvent = (ActionEvent e) -> {
+        //Search for name
+        ObservableList<Part> tmp = lookupPart(search.getText());
+        //Search for id 
+        try {
+            int id = Integer.parseInt(search.getText());
+            tmp.add(lookupPart(id));
+        } catch(NumberFormatException w) {
+            //do nothing
+        }
+        if (tmp != null) {
+            subPartsTable.setItems(tmp);
+        } else {
+            subPartsTable.setItems(getAllParts());
+        }
+        };
+        searchBtn.setOnAction(searchEvent);
+        
         
         
         ///Fill the bottom
@@ -444,7 +516,7 @@ public class Inventory extends Application {
         //Create buttoms
         Button addBtn = new Button("Add");
         EventHandler<ActionEvent> addEvent = (ActionEvent e) -> {
-            p.addPart(subPartsTable.getSelectionModel().getSelectedItem());
+            p.addAssociatedPart(subPartsTable.getSelectionModel().getSelectedItem());
         };
         addBtn.setOnAction(addEvent);
         
@@ -522,7 +594,7 @@ public class Inventory extends Application {
             productsTable.getColumns().addAll(productIDCol, productNameCol, invLevelCol, priceCol);
         }
         
-        productsTable.setItems(productList);
+        productsTable.setItems(getAllProducts());
         
         ///Fill the bottom
         //Create a hbox container
@@ -544,10 +616,7 @@ public class Inventory extends Application {
         modifyBtn.setOnAction(modEvent);
         Button deleteBtn = new Button("Delete");
         EventHandler<ActionEvent> delEvent = (ActionEvent e) -> {
-            Product p = productsTable.getSelectionModel().getSelectedItem();
-            int i = productList.indexOf(p);
-            productList.remove(i, i+1);
-
+            deleteProduct(productsTable.getSelectionModel().getSelectedItem());
         };
         deleteBtn.setOnAction(delEvent);
         
@@ -696,12 +765,12 @@ public class Inventory extends Application {
             int tempMin = Integer.parseInt(minField.getText());
             if (tempMax >= tempInv && tempInv >= tempMin) {
                 if (inHouse.isSelected()) {
-                    partList.add(new InHouse(curID, nameField.getText(), Double.parseDouble(costField.getText()),
+                    addPart(new InHouse(curID, nameField.getText(), Double.parseDouble(costField.getText()),
                     tempInv, tempMin, tempMax, Integer.parseInt(machineField.getText())));
                     curID++;
                     mainForm(applicationStage);
                 } else if (outsourced.isSelected()) {
-                    partList.add(new Outsourced(curID, nameField.getText(), Double.parseDouble(costField.getText()),
+                    addPart(new Outsourced(curID, nameField.getText(), Double.parseDouble(costField.getText()),
                     tempInv, tempMin, tempMax, machineField.getText()));
                     curID++;
                     mainForm(applicationStage);
@@ -804,7 +873,7 @@ public class Inventory extends Application {
         TextField costField = new TextField(Double.toString(curPart.getPrice()));
         TextField maxField = new TextField(Integer.toString(curPart.getMax()));
         TextField minField = new TextField(Integer.toString(curPart.getMin()));
-        TextField machineField = new TextField(Integer.toString(curPart.getMachineID()));
+        TextField machineField = new TextField(Integer.toString(curPart.getMachineId()));
         
         //Add all info to pane
         infoPane.add(id, 0, 0);
@@ -874,14 +943,12 @@ public class Inventory extends Application {
             int tempMin = Integer.parseInt(minField.getText());
             if (tempMax > tempInv && tempInv > tempMin) {
                 if (inHouse.isSelected()) {
-                    partList.add(new InHouse(curPart.getId(), nameField.getText(), Double.parseDouble(costField.getText()),
+                    updatePart(curPart.getId(), new InHouse(curPart.getId(), nameField.getText(), Double.parseDouble(costField.getText()),
                     tempInv, tempMin, tempMax, Integer.parseInt(machineField.getText())));
-                    partList.remove(curPart);
                     mainForm(applicationStage);
                 } else if (outsourced.isSelected()) {
-                    partList.add(new Outsourced(curPart.getId(), nameField.getText(), Double.parseDouble(costField.getText()),
+                    updatePart(curPart.getId(), new Outsourced(curPart.getId(), nameField.getText(), Double.parseDouble(costField.getText()),
                     tempInv, tempMin, tempMax, machineField.getText()));
-                    partList.remove(curPart);
                     mainForm(applicationStage);
                 }
             } else {
@@ -982,7 +1049,7 @@ public class Inventory extends Application {
         TextField costField = new TextField(Double.toString(curPart.getPrice()));
         TextField maxField = new TextField(Integer.toString(curPart.getMax()));
         TextField minField = new TextField(Integer.toString(curPart.getMin()));
-        TextField machineField = new TextField(curPart.getCompany());
+        TextField machineField = new TextField(curPart.getCompanyName());
         
         //Add all info to pane
         infoPane.add(id, 0, 0);
@@ -1052,14 +1119,12 @@ public class Inventory extends Application {
             int tempMin = Integer.parseInt(minField.getText());
             if (tempMax > tempInv && tempInv > tempMin) {
                 if (inHouse.isSelected()) {
-                    partList.add(new InHouse(curPart.getId(), nameField.getText(), Double.parseDouble(costField.getText()),
+                    updatePart(curPart.getId(), new InHouse(curPart.getId(), nameField.getText(), Double.parseDouble(costField.getText()),
                     tempInv, tempMin, tempMax, Integer.parseInt(machineField.getText())));
-                    partList.remove(curPart);
                     mainForm(applicationStage);
                 } else if (outsourced.isSelected()) {
-                    partList.add(new Outsourced(curPart.getId(), nameField.getText(), Double.parseDouble(costField.getText()),
+                    updatePart(curPart.getId(), new Outsourced(curPart.getId(), nameField.getText(), Double.parseDouble(costField.getText()),
                     tempInv, tempMin, tempMax, machineField.getText()));
-                    partList.remove(curPart);
                     mainForm(applicationStage);
                 }
             } else {
@@ -1120,7 +1185,7 @@ public class Inventory extends Application {
         GridPane right = new GridPane();
         
         //Create new product
-        Product p = new Product();
+        Product p = new Product(0, "null", 1, 1.0, 1, 1);
         
         ///Left GridPane
         //Add title
@@ -1202,7 +1267,7 @@ public class Inventory extends Application {
             subProductsTable.getColumns().addAll(productIDCol, productNameCol, invLevelCol, priceCol);
         }
         
-        subProductsTable.setItems(p.getParts());
+        subProductsTable.setItems(p.getAllAssociatedParts());
         
         ///Fill the bottom
         //Create a hbox container
@@ -1214,7 +1279,7 @@ public class Inventory extends Application {
         //Create buttoms
         Button removeBtn = new Button("Remove Associated Part");
         EventHandler<ActionEvent> remEvent = (ActionEvent e) -> {
-            p.removePart(subProductsTable.getSelectionModel().getSelectedItem());
+            p.deleteAssociatedPart(subProductsTable.getSelectionModel().getSelectedItem());
         };
         removeBtn.setOnAction(remEvent);
         Button saveBtn = new Button("Save");
@@ -1228,7 +1293,7 @@ public class Inventory extends Application {
                 p.setPrice(Double.parseDouble(priceField.getText()));
                 p.setMax(Integer.parseInt(maxField.getText()));
                 p.setMin(Integer.parseInt(minField.getText()));
-                productList.add(p);
+                addProduct(p);
                 curProdID++;
                 mainForm(applicationStage);
             } else {
@@ -1380,7 +1445,7 @@ public class Inventory extends Application {
             subProductsTable.getColumns().addAll(productIDCol, productNameCol, invLevelCol, priceCol);
         }
         
-        subProductsTable.setItems(p.getParts());
+        subProductsTable.setItems(p.getAllAssociatedParts());
         
         ///Fill the bottom
         //Create a hbox container
@@ -1392,7 +1457,7 @@ public class Inventory extends Application {
         //Create buttoms
         Button removeBtn = new Button("Remove Associated Part");
         EventHandler<ActionEvent> remEvent = (ActionEvent e) -> {
-            p.removePart(subProductsTable.getSelectionModel().getSelectedItem());
+            p.deleteAssociatedPart(subProductsTable.getSelectionModel().getSelectedItem());
         };
         removeBtn.setOnAction(remEvent);
         Button saveBtn = new Button("Save");
@@ -1405,8 +1470,8 @@ public class Inventory extends Application {
                 p.setPrice(Double.parseDouble(priceField.getText()));
                 p.setMax(Integer.parseInt(maxField.getText()));
                 p.setMin(Integer.parseInt(minField.getText()));
-                productList.remove(p);
-                productList.add(p);
+                deleteProduct(p);
+                addProduct(p);
                 mainForm(applicationStage);
             } else {
                 Alert error = new Alert(AlertType.ERROR);
