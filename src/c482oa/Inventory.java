@@ -23,6 +23,13 @@ import javafx.scene.layout.HBox;
 //JavaDoc foler is located in C482OAssessment/dist/javadoc
 
 /**
+ * TODO: INPUT VALIDATION AND JAVADOC COMMENTS ON VALIDATEINPUT FUNCTION
+ * ADD PART G ALERTS
+ */
+
+
+
+/**
  *
  * @author austinjohnson
  */
@@ -45,6 +52,8 @@ public class Inventory extends Application {
     * <p>
     * FUTURE ENHANCEMENTS: Add a return value to signify that the
     * part was successfully added.
+    * <p>
+    * RUNTIME ERROR: None
     *
     * @param  newPart  the part to be added to allParts
     */
@@ -58,6 +67,8 @@ public class Inventory extends Application {
     * <p>
     * FUTURE ENHANCEMENTS: Add a return value to signify that the
     * product was successfully added.
+    * <p>
+    * RUNTIME ERROR: None
     *
     * @param  newProduct  the product to be added to allProducts
     */
@@ -70,7 +81,10 @@ public class Inventory extends Application {
     * using the unique id.
     * 
     * <p>
-    * FUTURE ENHANCEMENTS: Use a faster search algorithm to find the part.
+    * FUTURE ENHANCEMENT: Use a faster search algorithm to find the part.
+    * <p>
+    * LOGIC ERROR: Used "greater than" rather than "less than" on the for
+    * loop, causing it not not search any products.
     *
     * @param  partId  the id of the part to be found
     * @return the part whose id is partId
@@ -89,7 +103,10 @@ public class Inventory extends Application {
     * using the name.
     * 
     * <p>
-    * FUTURE ENHANCEMENTS: Use a faster search algorithm to find the part.
+    * FUTURE ENHANCEMENT: Use a faster search algorithm to find the part.
+    * <p>
+    * LOGIC ERROR: Used "greater than" rather than "less than" on the for
+    * loop, causing it not not search any products.
     *
     * @param  partName  the name of the part to be found
     * @return a list of all the parts whose name contains the partName
@@ -110,6 +127,9 @@ public class Inventory extends Application {
     * 
     * <p>
     * FUTURE ENHANCEMENTS: Use a faster search algorithm to find the part.
+    * <p>
+    * LOGIC ERROR: Used "greater than" rather than "less than" on the for
+    * loop, causing it not not search any products.
     *
     * @param  productId  the id of the product to be found
     * @return the part whose id is productId
@@ -127,8 +147,12 @@ public class Inventory extends Application {
     * Finds a specific part in the allProducts list
     * using the name.
     * 
+    * 
     * <p>
-    * FUTURE ENHANCEMENTS: Use a faster search algorithm to find the part.
+    * FUTURE ENHANCEMENT: Use a faster search algorithm to find the part.
+    * <p>
+    * LOGIC ERROR: Used "greater than" rather than "less than" on the for
+    * loop, causing it not not search any products.
     *
     * @param  productName  the name of the product to be found
     * @return a list of all the products whose name contains the productName
@@ -148,15 +172,22 @@ public class Inventory extends Application {
     * to the allParts list.
     * 
     * <p>
-    * FUTURE ENHANCEMENTS: Return a value to confirm that part was updated.
+    * FUTURE ENHANCEMENT: Change the implementation of this function
+    * to allow the update function to choose in-house or outsourced part
+    * to further simplify the individual page's code.
+    * <p>
+    * RUNTIME ERROR: When I tried to use the function, it shot
+    * out an error with the original way that I was trying to remove
+    * the old part. So I utilized the deletePart and lookupPart
+    * functions instead of modifying the allParts list directly.
     *
     * @param  index  the id of the current part
     * @param selectedPart the updated part to be added to allParts list
     */
     public static void updatePart(int index, Part selectedPart) {
-        allParts.remove(index);
+        deletePart(lookupPart(index));
         selectedPart.setId(index);
-        allParts.add(selectedPart);
+        addPart(selectedPart);
     }
     
     /**
@@ -164,15 +195,21 @@ public class Inventory extends Application {
     * to the allProducts list.
     * 
     * <p>
-    * FUTURE ENHANCEMENTS: Return a value to confirm that part was updated.
+    * FUTURE ENHANCEMENT: Add a return value to signify that the function
+    * ran successfully.
+    * <p>
+    * RUNTIME ERROR: When I tried to use the function, it shot
+    * out an error with the original way that I was trying to remove
+    * the old product. So I utilized the deleteProduct and lookupProduct
+    * functions instead of modifying the allProducts list directly.
     *
     * @param  index  the id of the current product
     * @param selectedProduct the updated part to be added to allProducts list
     */
     public static void updateProduct(int index, Product selectedProduct) {
-        allProducts.remove(index);
+        deleteProduct(lookupProduct(index));
         selectedProduct.setId(index);
-        allProducts.add(selectedProduct);
+        addProduct(selectedProduct);
     }
     
     /**
@@ -180,6 +217,8 @@ public class Inventory extends Application {
     * 
     * <p>
     * FUTURE ENHANCEMENTS: It's perfect
+    * <p> 
+    * RUNTIME ERROR: None
     *
     * @param  selectedPart  the part to be removed
     * @return true if part was found in allParts and removed
@@ -193,6 +232,8 @@ public class Inventory extends Application {
     * 
     * <p>
     * FUTURE ENHANCEMENTS: It's perfect
+    * <p>
+    * RUNTIME ERROR: None
     *
     * @param  selectedProduct  the product to be removed
     * @return true if part was found in allParts and removed
@@ -206,6 +247,8 @@ public class Inventory extends Application {
     * 
     * <p>
     * FUTURE ENHANCEMENTS: It's perfect
+    * <p>
+    * RUNTIME ERROR: None
     *
     * @return allParts list
     */
@@ -218,6 +261,8 @@ public class Inventory extends Application {
     * 
     * <p>
     * FUTURE ENHANCEMENTS: It's perfect
+    * <p>
+    * RUNTIME ERROR: None
     *
     * @return allParts list
     */
@@ -381,6 +426,11 @@ public class Inventory extends Application {
         } catch(NumberFormatException w) {
             //do nothing
         }
+        if (tmp.size() == 0) {
+            Alert error = new Alert(AlertType.ERROR);
+            error.setHeaderText("No results found with that name/ID.");
+            error.showAndWait();
+        }
         partsTable.setItems(tmp);
         };
         searchBtn.setOnAction(searchEvent);
@@ -410,7 +460,12 @@ public class Inventory extends Application {
         modifyBtn.setOnAction(modEvent);
         Button deleteBtn = new Button("Delete");
         EventHandler<ActionEvent> delEvent = (ActionEvent e) -> {
-            deletePart(partsTable.getSelectionModel().getSelectedItem());
+            if (!deletePart(partsTable.getSelectionModel().getSelectedItem())) {
+                Alert error = new Alert(AlertType.ERROR);
+                error.setHeaderText("Part Not Deleted!");
+                error.setContentText("The selected part was not found, and could not be deleted.");
+                error.showAndWait();
+            }
         };
         deleteBtn.setOnAction(delEvent);
         
@@ -453,10 +508,11 @@ public class Inventory extends Application {
         
         ///Fill the top
         //Create a hbox container
-        HBox top = new HBox(175);
+        HBox top = new HBox(20);
         
         //Create the Label
         Label title = new Label("Parts");
+        title.setPadding(new Insets(0, 100, 0, 0));
         
         //Create search box
         TextField search = new TextField();
@@ -487,6 +543,8 @@ public class Inventory extends Application {
             subPartsTable.getColumns().addAll(partIDCol, partNameCol, invLevelCol, priceCol);
         }
         
+        subPartsTable.setItems(getAllParts());
+        
         EventHandler<ActionEvent> searchEvent = (ActionEvent e) -> {
         //Search for name
         ObservableList<Part> tmp = lookupPart(search.getText());
@@ -496,6 +554,11 @@ public class Inventory extends Application {
             tmp.add(lookupPart(id));
         } catch(NumberFormatException w) {
             //do nothing
+        }
+        if (tmp.size() == 0) {
+            Alert error = new Alert(AlertType.ERROR);
+            error.setHeaderText("No results found with that name/ID.");
+            error.showAndWait();
         }
         partsTable.setItems(tmp);
         };
@@ -550,14 +613,15 @@ public class Inventory extends Application {
         
         ///Fill the top
         //Create a hbox container
-        HBox top = new HBox(180);
+        HBox top = new HBox(20);
         
         //Create the Label
         Label title = new Label("Products");
+        title.setPadding(new Insets(0, 105, 0, 0));
         
         //Create search box
         TextField search = new TextField();
-        search.setPromptText("Search by Part ID or Name");
+        search.setPromptText("Search by Product ID or Name");
         search.setFocusTraversable(false);
         Button searchBtn = new Button("Search");
         
@@ -568,20 +632,24 @@ public class Inventory extends Application {
         //Populate the Parts Table Columns
         if (productsTable == null) {
             productsTable = new TableView();
-            TableColumn productIDCol = new TableColumn("Part ID");
+            TableColumn productIDCol = new TableColumn("Product ID");
             productIDCol.setMaxWidth(75);
             productIDCol.setCellValueFactory(new PropertyValueFactory<>("id"));
-            TableColumn productNameCol = new TableColumn("Part Name");
+            TableColumn productNameCol = new TableColumn("Product Name");
             productNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+            productNameCol.setMinWidth(95);
+
             TableColumn invLevelCol = new TableColumn("Inventory Level");
             invLevelCol.setCellValueFactory(new PropertyValueFactory<>("stock"));
-            invLevelCol.setMinWidth(100);
+            invLevelCol.setMinWidth(95);
             TableColumn priceCol = new TableColumn("Price/ Cost per Unit");
             priceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
-            priceCol.setMinWidth(140);
+            priceCol.setMinWidth(135);
             productsTable.setMinSize(400, 150);        
             productsTable.getColumns().addAll(productIDCol, productNameCol, invLevelCol, priceCol);
         }
+        
+        productsTable.setItems(getAllProducts());
         
         EventHandler<ActionEvent> searchEvent = (ActionEvent e) -> {
         //Search for name
@@ -592,6 +660,11 @@ public class Inventory extends Application {
             tmp.add(lookupProduct(id));
         } catch(NumberFormatException w) {
             //do nothing
+        }
+        if (tmp.size() == 0) {
+            Alert error = new Alert(AlertType.ERROR);
+            error.setHeaderText("No results found with that name/ID.");
+            error.showAndWait();
         }
         productsTable.setItems(tmp);
         };
@@ -942,7 +1015,7 @@ public class Inventory extends Application {
             int tempInv = Integer.parseInt(invField.getText());
             int tempMax = Integer.parseInt(maxField.getText());
             int tempMin = Integer.parseInt(minField.getText());
-            if (tempMax > tempInv && tempInv > tempMin) {
+            if (tempMax >= tempInv && tempInv >= tempMin) {
                 if (inHouse.isSelected()) {
                     updatePart(curPart.getId(), new InHouse(curPart.getId(), nameField.getText(), Double.parseDouble(costField.getText()),
                     tempInv, tempMin, tempMax, Integer.parseInt(machineField.getText())));
@@ -1295,6 +1368,7 @@ public class Inventory extends Application {
                 p.setMax(Integer.parseInt(maxField.getText()));
                 p.setMin(Integer.parseInt(minField.getText()));
                 addProduct(p);
+
                 curProdID++;
                 mainForm(applicationStage);
             } else {
@@ -1369,7 +1443,7 @@ public class Inventory extends Application {
         ///Left GridPane
         //Add title
         HBox top = new HBox();
-        Label title = new Label("Add Product");
+        Label title = new Label("Modify Product");
         top.getChildren().add(title);
         left.add(top, 0, 0);
         
@@ -1513,4 +1587,43 @@ public class Inventory extends Application {
         applicationStage.setScene(tmp);
         applicationStage.show();
     }
+    
+    public boolean validateInput(String price, String stock, String min, String max, String machineId) {
+        try {
+            double DPrice = Double.parseDouble(price);
+            int IStock = Integer.parseInt(stock);
+            int IMin = Integer.parseInt(min);
+            int IMax = Integer.parseInt(max);
+            int IMachineId = Integer.parseInt(machineId);
+            
+            if (IStock > IMax || IStock < IMin) {
+                return false;
+            } else {
+                return true;
+            }
+        } catch (Exception e) {
+            //Print Alert
+            return false;
+        }
+    }
+    
+    public boolean validateInput(String price, String stock, String min, String max) {
+        try {
+            double DPrice = Double.parseDouble(price);
+            int IStock = Integer.parseInt(stock);
+            int IMin = Integer.parseInt(min);
+            int IMax = Integer.parseInt(max);
+            
+            if (IStock > IMax || IStock < IMin) {
+                return false;
+            } else {
+                return true;
+            }
+        } catch (Exception e) {
+            //Print alert
+            return false;
+        }
+    }
+    
+    
 }
