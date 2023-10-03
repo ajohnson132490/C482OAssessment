@@ -9,27 +9,27 @@ package c482oa.resources;
  * @author austinjohnson
  */
 public class Outsourced extends Part {
-    String company;
+    private String companyName;
     
-    public Outsourced(int id, String name, double price, int stock, int min, int max, String company) {
+    public Outsourced(int id, String name, double price, int stock, int min, int max, String companyName) {
         super(id, name, price, stock, min, max);
-        this.company = company;
+        this.companyName = companyName;
     }
     
     /**
      * 
      * @return company name
      */
-    public String getCompany() {
-        return this.company;
+    public String getCompanyName() {
+        return this.companyName;
     }
     
     /**
      * 
-     * @param company new company name
+     * @param companyName new company name
      */
-    public void setCompany(String company) {
-        this.company = company;
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
     }
     
 }

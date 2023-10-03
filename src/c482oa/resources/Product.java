@@ -18,27 +18,19 @@ public class Product {
     private double price;
     private int max;
     private int min;
-    private ObservableList<Part> parts = FXCollections.observableArrayList();
+    private ObservableList<Part> associatedParts = FXCollections.observableArrayList();
     
     public Product(int id, String name, int stock, double price, int max, int min,
-            ObservableList<Part> parts) {
+            ObservableList<Part> associatedParts) {
         this.id = id;
         this.name = name;
         this.stock = stock;
         this.price = price;
         this.max = max;
         this.min = min;
-        this.parts = parts;
+        this.associatedParts = associatedParts;
     }
-    
-    public Product() {
-        this.id = 0;
-        this.name = "null";
-        this.stock = 1;
-        this.price = 0;
-        this.max = 1;
-        this.min = 0;
-    }
+ 
     /**
      * 
      * @return the id
@@ -139,32 +131,24 @@ public class Product {
      * 
      * @return all associated parts
      */
-    public ObservableList<Part> getParts() {
-        return parts;
+    public ObservableList<Part> getAllAssociatedParts() {
+        return associatedParts;
     }
     
     /**
      * 
-     * @param parts associated parts list
+     * @param part new part to add to parts list 
      */
-    public void setParts(ObservableList<Part> parts) {
-        this.parts = parts;
+    public void addAssociatedPart(Part part) {
+        associatedParts.add(part);
     }
     
     /**
      * 
-     * @param p new part to add to parts list 
+     * @param selectedAssociatedPart part to remove from parts list
      */
-    public void addPart(Part p) {
-        parts.add(p);
-    }
-    
-    /**
-     * 
-     * @param p part to remove from parts list
-     */
-    public void removePart(Part p) {
-        parts.remove(p);
+    public boolean deleteAssociatedpart(Part selectedAssociatedPart) {
+        return associatedParts.remove(selectedAssociatedPart);
     }
     
     
