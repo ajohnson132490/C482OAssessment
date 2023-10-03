@@ -228,6 +228,13 @@ public class Inventory extends Application {
         Label title = new Label("Inventory Management System");
         root.getChildren().add(title);
         
+        //Parts Table
+        GridPane partPane = partPaneGenerator(applicationStage);  
+        partPane.getStyleClass().add("mainFormTablePane");
+        
+        //Products Table
+        GridPane productPane = productPaneGenerator(applicationStage);
+        productPane.getStyleClass().add("mainFormTablePane");
         
         HBox lower = new HBox();
         lower.setPadding(new Insets(0,0,0,400));
@@ -239,6 +246,8 @@ public class Inventory extends Application {
         lower.getChildren().add(exitBtn);
         
         
+        root.add(partPane, 0,1);
+        root.add(productPane, 1, 1);
         root.add(lower, 1, 2);
         
         root.getStylesheets().add(getClass().getResource("resources/stylesheet.css").toExternalForm());
@@ -356,6 +365,201 @@ public class Inventory extends Application {
         pane.add(bottom, 0, 2);
         
         //Return the Parts Pane
+        return pane;
+    }
+
+    /**
+    * This method generates a table that can add parts from the list "partList"
+    * to a product's part list.
+    * <p>
+    * This is an overloaded version of partPaneGenerator specifically designed for the
+    * add and modify product forms.
+    * <p>
+    * FUTURE ENHANCEMENT: Filter parts by in-house or outsourced. Also display the machine 
+    * id or company name.
+    * <p>
+    * RUNTIME ERROR: When generating the parts pane for the add/modify product form
+    * I ran into the issue of not being able to resize the table because I was trying
+    * to use the same table that I use for the main form parts pane. To solve this, I
+    * created a duplicate table, so that I could size it separately. 
+    *
+    * @param  p  the product that you are adding/modifying
+    * @return table of all parts
+    * @see partPaneGenerator(Stage applicationStage)
+    */
+    public GridPane partPaneGenerator(Product p) {
+        GridPane pane = new GridPane();
+        pane.setVgap(10);
+        
+        ///Fill the top
+        //Create a hbox container
+        HBox top = new HBox(175);
+        
+        //Create the Label
+        Label title = new Label("Parts");
+        
+        //Create search box
+        TextField search = new TextField();
+        search.setPromptText("Search by Part ID or Name");
+        search.setFocusTraversable(false);
+        
+        //TODO
+        /*
+        *
+        * Make search work
+        *
+        */
+        
+        //Add items to top
+        top.getChildren().addAll(title, search);
+        
+        ///Fill the middle
+        //Populate the Parts Table Columns
+        if (subPartsTable == null) {
+            subPartsTable = new TableView();
+            TableColumn partIDCol = new TableColumn("Part ID");
+            partIDCol.setMaxWidth(75);
+            partIDCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+            TableColumn partNameCol = new TableColumn("Part Name");
+            partNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+            TableColumn invLevelCol = new TableColumn("Inventory Level");
+            invLevelCol.setCellValueFactory(new PropertyValueFactory<>("stock"));
+            invLevelCol.setMinWidth(100);
+            TableColumn priceCol = new TableColumn("Price/ Cost per Unit");
+            priceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
+            priceCol.setMinWidth(140);
+            subPartsTable.setMinSize(400, 150);  
+            subPartsTable.setMaxSize(400, 150);
+            subPartsTable.getColumns().addAll(partIDCol, partNameCol, invLevelCol, priceCol);
+        }
+        
+        subPartsTable.setItems(partList);
+        
+        
+        ///Fill the bottom
+        //Create a hbox container
+        HBox bottom = new HBox(10);
+        bottom.setPadding(new Insets(0, 0, 0, 350));
+        
+        //Create buttoms
+        Button addBtn = new Button("Add");
+        EventHandler<ActionEvent> addEvent = (ActionEvent e) -> {
+            p.addPart(subPartsTable.getSelectionModel().getSelectedItem());
+        };
+        addBtn.setOnAction(addEvent);
+        
+        //Add buttons to bottom
+        bottom.getChildren().add(addBtn);
+        
+        //Add all contents to Parts Pane
+        pane.add(top, 0, 0);
+        pane.add(subPartsTable, 0, 1);
+        pane.add(bottom, 0, 2);
+        
+        //Return the Parts Pane
+        return pane;
+    }
+
+    /**
+    * This is one of the helper functions for the main form. It generates a table
+    * based on the global list "productList".
+    * <p>
+    * It also give the user the ability to add, modify, or delete products.
+    * <p>
+    * FUTURE ENHANCEMENTS: Allow users to click on a product and see all related
+    * parts at a glance.
+    * <p>
+    * LOGIC ERROR: When I initially created this function, I had not yet made
+    * the modify product function, which led to a logic error. I fixed this 
+    * by creating the modify product function.
+    *
+    * @param  applicationStage  the top level container of the GUI
+    * @return table of all products
+    * @see mainForm(Stage applicationStage)
+    */
+    public GridPane productPaneGenerator(Stage applicationStage) {
+        GridPane pane = new GridPane();
+        pane.setVgap(10);
+        
+        ///Fill the top
+        //Create a hbox container
+        HBox top = new HBox(180);
+        
+        //Create the Label
+        Label title = new Label("Products");
+        
+        //Create search box
+        TextField search = new TextField();
+        search.setPromptText("Search by Part ID or Name");
+        search.setFocusTraversable(false);
+        
+        //TODO
+        /*
+        *
+        * Make search work
+        *
+        */
+        
+        //Add items to top
+        top.getChildren().addAll(title, search);
+        
+        ///Fill the middle
+        //Populate the Parts Table Columns
+        if (productsTable == null) {
+            productsTable = new TableView();
+            TableColumn productIDCol = new TableColumn("Part ID");
+            productIDCol.setMaxWidth(75);
+            productIDCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+            TableColumn productNameCol = new TableColumn("Part Name");
+            productNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+            TableColumn invLevelCol = new TableColumn("Inventory Level");
+            invLevelCol.setCellValueFactory(new PropertyValueFactory<>("stock"));
+            invLevelCol.setMinWidth(100);
+            TableColumn priceCol = new TableColumn("Price/ Cost per Unit");
+            priceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
+            priceCol.setMinWidth(140);
+            productsTable.setMinSize(400, 150);        
+            productsTable.getColumns().addAll(productIDCol, productNameCol, invLevelCol, priceCol);
+        }
+        
+        productsTable.setItems(productList);
+        
+        ///Fill the bottom
+        //Create a hbox container
+        HBox bottom = new HBox(10);
+        bottom.setPadding(new Insets(0, 0, 0, 225));
+        
+        //Create buttoms
+        Button addBtn = new Button("Add");
+        EventHandler<ActionEvent> addEvent = (ActionEvent e) -> {
+            addProductForm(applicationStage);
+        };
+        addBtn.setOnAction(addEvent);
+        Button modifyBtn = new Button("Modify");
+        EventHandler<ActionEvent> modEvent = (ActionEvent e) -> {
+            Product p = productsTable.getSelectionModel().getSelectedItem();
+            modifyProductForm(applicationStage, p);
+
+        };
+        modifyBtn.setOnAction(modEvent);
+        Button deleteBtn = new Button("Delete");
+        EventHandler<ActionEvent> delEvent = (ActionEvent e) -> {
+            Product p = productsTable.getSelectionModel().getSelectedItem();
+            int i = productList.indexOf(p);
+            productList.remove(i, i+1);
+
+        };
+        deleteBtn.setOnAction(delEvent);
+        
+        //Add buttons to bottom
+        bottom.getChildren().addAll(addBtn, modifyBtn, deleteBtn);
+        
+        //Add all contents to Products Pane
+        pane.add(top, 0, 0);
+        pane.add(productsTable, 0, 1);
+        pane.add(bottom, 0, 2);
+        
+        //Return the Products Pane
         return pane;
     }
     
