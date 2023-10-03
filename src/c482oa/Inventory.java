@@ -26,8 +26,8 @@ import javafx.scene.layout.HBox;
  */
 public class Inventory extends Application {
     //Global lists and variables
-    ObservableList<Part> partList = FXCollections.observableArrayList();
-    ObservableList<Product> productList = FXCollections.observableArrayList();
+    ObservableList<Part> allParts = FXCollections.observableArrayList();
+    ObservableList<Product> allProducts = FXCollections.observableArrayList();
     int curID = 1;
     int curProdID = 1;
     
@@ -36,6 +36,142 @@ public class Inventory extends Application {
     private TableView<Part> subPartsTable;
     private TableView<Product> productsTable;
     private TableView<Part> subProductsTable;
+    
+    /**
+    * Adds a new part to the global part list "allParts"
+    * 
+    * <p>
+    * FUTURE ENHANCEMENTS: Add a return value to signify that the
+    * part was successfully added.
+    *
+    * @param  newPart  the part to be added to allParts
+    */
+    public void addPart(Part newPart) {
+        allParts.add(newPart);
+    }
+    
+    /**
+    * Adds a new part to the global product list "allProducts"
+    * 
+    * <p>
+    * FUTURE ENHANCEMENTS: Add a return value to signify that the
+    * product was successfully added.
+    *
+    * @param  newProduct  the product to be added to allProducts
+    */
+    public void addProduct(Product newProduct) {
+        allProducts.add(newProduct);
+    }
+    
+    /**
+    * Finds a specific part in the allParts list
+    * using the unique id.
+    * 
+    * <p>
+    * FUTURE ENHANCEMENTS: Use a faster search algorithm to find the part.
+    *
+    * @param  partId  the id of the part to be found
+    * @return the part whose id is partId
+    */
+    public Part lookupPart(int partId) {
+        for (int i = 0; i > allParts.size(); i++) {
+            if (allParts.get(i).getId() == partId) {
+                return allParts.get(i);
+            }
+        }
+        return null;
+    }
+    
+    /**
+    * Finds a specific part in the allParts list
+    * using the name.
+    * 
+    * <p>
+    * FUTURE ENHANCEMENTS: Use a faster search algorithm to find the part.
+    *
+    * @param  partName  the name of the part to be found
+    * @return a list of all the parts whose name contains the partName
+    */
+    public ObservableList<Part> lookupPart(String partName) {
+        ObservableList<Part> tmp = FXCollections.observableArrayList();
+        for (int i = 0; i > allParts.size(); i++) {
+            if (allParts.get(i).getName().contains(partName)) {
+                tmp.add(allParts.get(i));
+            }
+        }
+        return tmp;
+    }
+    
+    /**
+    * Finds a specific part in the allProducts list
+    * using the unique id.
+    * 
+    * <p>
+    * FUTURE ENHANCEMENTS: Use a faster search algorithm to find the part.
+    *
+    * @param  productId  the id of the product to be found
+    * @return the part whose id is productId
+    */
+    public Product lookupProduct(int productId) {
+        for (int i = 0; i > allProducts.size(); i++) {
+            if (allProducts.get(i).getId() == productId) {
+                return allProducts.get(i);
+            }
+        }
+        return null;
+    }
+    
+    /**
+    * Finds a specific part in the allProducts list
+    * using the name.
+    * 
+    * <p>
+    * FUTURE ENHANCEMENTS: Use a faster search algorithm to find the part.
+    *
+    * @param  productName  the name of the product to be found
+    * @return a list of all the products whose name contains the productName
+    */
+    public ObservableList<Product> lookupProduct(String productName) {
+        ObservableList<Product> tmp = FXCollections.observableArrayList();
+        for (int i = 0; i > allProducts.size(); i++) {
+            if (allProducts.get(i).getName().contains(productName)) {
+                tmp.add(allProducts.get(i));
+            }
+        }
+        return tmp;
+    }
+    
+    /**
+    * Update the id of a given part and add that part
+    * to the allParts list.
+    * 
+    * <p>
+    * FUTURE ENHANCEMENTS: Return a value to confirm that part was updated.
+    *
+    * @param  index  the id of the current part
+    * @param selectedPart the updated part to be added to allParts list
+    */
+    public void updatePart(int index, Part selectedPart) {
+        allParts.remove(index);
+        selectedPart.setId(index);
+        allParts.add(selectedPart);
+    }
+    
+    /**
+    * Update the id of a given product and add that product
+    * to the allProducts list.
+    * 
+    * <p>
+    * FUTURE ENHANCEMENTS: Return a value to confirm that part was updated.
+    *
+    * @param  index  the id of the current product
+    * @param selectedProduct the updated part to be added to allProducts list
+    */
+    public void updateProduct(int index, Product selectedProduct) {
+        allProducts.remove(index);
+        selectedProduct.setId(index);
+        allProducts.add(selectedProduct);
+    }
     
     /**
     * Sets the window title and loads the main form.
