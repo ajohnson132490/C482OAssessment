@@ -28,8 +28,8 @@ import javafx.scene.layout.HBox;
  */
 public class Inventory extends Application {
     //Global lists and variables
-    private ObservableList<Part> allParts = FXCollections.observableArrayList();
-    private ObservableList<Product> allProducts = FXCollections.observableArrayList();
+    private static ObservableList<Part> allParts = FXCollections.observableArrayList();
+    private static ObservableList<Product> allProducts = FXCollections.observableArrayList();
     private int curID = 1;
     private int curProdID = 1;
     
@@ -48,7 +48,7 @@ public class Inventory extends Application {
     *
     * @param  newPart  the part to be added to allParts
     */
-    public void addPart(Part newPart) {
+    public static void addPart(Part newPart) {
         allParts.add(newPart);
     }
     
@@ -61,7 +61,7 @@ public class Inventory extends Application {
     *
     * @param  newProduct  the product to be added to allProducts
     */
-    public void addProduct(Product newProduct) {
+    public static void addProduct(Product newProduct) {
         allProducts.add(newProduct);
     }
     
@@ -75,7 +75,7 @@ public class Inventory extends Application {
     * @param  partId  the id of the part to be found
     * @return the part whose id is partId
     */
-    public Part lookupPart(int partId) {
+    public static Part lookupPart(int partId) {
         for (int i = 0; i < allParts.size(); i++) {
             if (allParts.get(i).getId() == partId) {
                 return allParts.get(i);
@@ -94,7 +94,7 @@ public class Inventory extends Application {
     * @param  partName  the name of the part to be found
     * @return a list of all the parts whose name contains the partName
     */
-    public ObservableList<Part> lookupPart(String partName) {
+    public static ObservableList<Part> lookupPart(String partName) {
         ObservableList<Part> tmp = FXCollections.observableArrayList();
         for (int i = 0; i < allParts.size(); i++) {
             if (allParts.get(i).getName().toLowerCase().contains(partName.toLowerCase())) {
@@ -114,7 +114,7 @@ public class Inventory extends Application {
     * @param  productId  the id of the product to be found
     * @return the part whose id is productId
     */
-    public Product lookupProduct(int productId) {
+    public static Product lookupProduct(int productId) {
         for (int i = 0; i > allProducts.size(); i++) {
             if (allProducts.get(i).getId() == productId) {
                 return allProducts.get(i);
@@ -133,7 +133,7 @@ public class Inventory extends Application {
     * @param  productName  the name of the product to be found
     * @return a list of all the products whose name contains the productName
     */
-    public ObservableList<Product> lookupProduct(String productName) {
+    public static ObservableList<Product> lookupProduct(String productName) {
         ObservableList<Product> tmp = FXCollections.observableArrayList();
         for (int i = 0; i > allProducts.size(); i++) {
             if (allProducts.get(i).getName().contains(productName)) {
@@ -153,7 +153,7 @@ public class Inventory extends Application {
     * @param  index  the id of the current part
     * @param selectedPart the updated part to be added to allParts list
     */
-    public void updatePart(int index, Part selectedPart) {
+    public static void updatePart(int index, Part selectedPart) {
         allParts.remove(index);
         selectedPart.setId(index);
         allParts.add(selectedPart);
@@ -169,7 +169,7 @@ public class Inventory extends Application {
     * @param  index  the id of the current product
     * @param selectedProduct the updated part to be added to allProducts list
     */
-    public void updateProduct(int index, Product selectedProduct) {
+    public static void updateProduct(int index, Product selectedProduct) {
         allProducts.remove(index);
         selectedProduct.setId(index);
         allProducts.add(selectedProduct);
@@ -184,7 +184,7 @@ public class Inventory extends Application {
     * @param  selectedPart  the part to be removed
     * @return true if part was found in allParts and removed
     */
-    public boolean deletePart(Part selectedPart) {
+    public static boolean deletePart(Part selectedPart) {
         return allParts.remove(selectedPart);
     }
     
@@ -197,7 +197,7 @@ public class Inventory extends Application {
     * @param  selectedProduct  the product to be removed
     * @return true if part was found in allParts and removed
     */
-    public boolean deleteProduct(Product selectedProduct) {
+    public static boolean deleteProduct(Product selectedProduct) {
         return allProducts.remove(selectedProduct);
     }
     
@@ -209,7 +209,7 @@ public class Inventory extends Application {
     *
     * @return allParts list
     */
-    public ObservableList<Part> getAllParts() {
+    public static ObservableList<Part> getAllParts() {
         return allParts;
     }
     
@@ -221,7 +221,7 @@ public class Inventory extends Application {
     *
     * @return allParts list
     */
-    public ObservableList<Product> getAllProducts() {
+    public static ObservableList<Product> getAllProducts() {
         return allProducts;
     }
     
@@ -373,7 +373,6 @@ public class Inventory extends Application {
         
         EventHandler<ActionEvent> searchEvent = (ActionEvent e) -> {
         //Search for name
-        System.out.println(lookupPart(search.getText()));
         ObservableList<Part> tmp = lookupPart(search.getText());
         //Search for id 
         try {
@@ -498,11 +497,7 @@ public class Inventory extends Application {
         } catch(NumberFormatException w) {
             //do nothing
         }
-        if (tmp != null) {
-            subPartsTable.setItems(tmp);
-        } else {
-            subPartsTable.setItems(getAllParts());
-        }
+        partsTable.setItems(tmp);
         };
         searchBtn.setOnAction(searchEvent);
         
@@ -564,16 +559,10 @@ public class Inventory extends Application {
         TextField search = new TextField();
         search.setPromptText("Search by Part ID or Name");
         search.setFocusTraversable(false);
-        
-        //TODO
-        /*
-        *
-        * Make search work
-        *
-        */
+        Button searchBtn = new Button("Search");
         
         //Add items to top
-        top.getChildren().addAll(title, search);
+        top.getChildren().addAll(title, search, searchBtn);
         
         ///Fill the middle
         //Populate the Parts Table Columns
@@ -594,7 +583,19 @@ public class Inventory extends Application {
             productsTable.getColumns().addAll(productIDCol, productNameCol, invLevelCol, priceCol);
         }
         
-        productsTable.setItems(getAllProducts());
+        EventHandler<ActionEvent> searchEvent = (ActionEvent e) -> {
+        //Search for name
+        ObservableList<Product> tmp = lookupProduct(search.getText());
+        //Search for id 
+        try {
+            int id = Integer.parseInt(search.getText());
+            tmp.add(lookupProduct(id));
+        } catch(NumberFormatException w) {
+            //do nothing
+        }
+        productsTable.setItems(tmp);
+        };
+        searchBtn.setOnAction(searchEvent);
         
         ///Fill the bottom
         //Create a hbox container
