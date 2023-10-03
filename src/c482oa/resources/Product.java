@@ -20,15 +20,13 @@ public class Product {
     private int min;
     private ObservableList<Part> associatedParts = FXCollections.observableArrayList();
     
-    public Product(int id, String name, int stock, double price, int max, int min,
-            ObservableList<Part> associatedParts) {
+    public Product(int id, String name, int stock, double price, int max, int min) {
         this.id = id;
         this.name = name;
         this.stock = stock;
         this.price = price;
         this.max = max;
         this.min = min;
-        this.associatedParts = associatedParts;
     }
  
     /**
@@ -147,7 +145,7 @@ public class Product {
      * 
      * @param selectedAssociatedPart part to remove from parts list
      */
-    public boolean deleteAssociatedpart(Part selectedAssociatedPart) {
+    public boolean deleteAssociatedPart(Part selectedAssociatedPart) {
         return associatedParts.remove(selectedAssociatedPart);
     }
     
