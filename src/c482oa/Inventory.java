@@ -1,6 +1,7 @@
 package c482oa;
 
 import c482oa.resources.*;
+import java.util.Optional;
 import javafx.scene.control.*;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
@@ -8,8 +9,6 @@ import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
 import javafx.event.*;
 import javafx.geometry.Insets;
 import javafx.stage.Stage;
@@ -21,12 +20,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
 //JavaDoc foler is located in C482OAssessment/dist/javadoc
-
-/**
- * TODO: INPUT VALIDATION AND JAVADOC COMMENTS ON VALIDATEINPUT FUNCTION
- * ADD PART G ALERTS
- */
-
 
 
 /**
@@ -289,7 +282,6 @@ public class Inventory extends Application {
     /**
     * Main function that starts the program accounting for
     * command line arguments.
-    * <p>
     *
     * @param args the command line arguments
     */
@@ -449,18 +441,28 @@ public class Inventory extends Application {
         addBtn.setOnAction(addEvent);
         Button modifyBtn = new Button("Modify");
         EventHandler<ActionEvent> modEvent = (ActionEvent e) -> {
-            Part p = partsTable.getSelectionModel().getSelectedItem();
-            if (p instanceof InHouse) {
-                modifyPartForm(applicationStage, (InHouse) p);
-            } else if (p instanceof Outsourced) {
-                modifyPartForm(applicationStage, (Outsourced) p);
+            try {
+                Part p = partsTable.getSelectionModel().getSelectedItem();
+                if (p instanceof InHouse) {
+                    modifyPartForm(applicationStage, (InHouse) p);
+                } else if (p instanceof Outsourced) {
+                    modifyPartForm(applicationStage, (Outsourced) p);
+                }
+            } catch (Exception x) {
+                Alert error = new Alert(AlertType.ERROR);
+                error.setHeaderText("No Part Selected");
+                error.showAndWait();
             }
 
         };
         modifyBtn.setOnAction(modEvent);
         Button deleteBtn = new Button("Delete");
         EventHandler<ActionEvent> delEvent = (ActionEvent e) -> {
-            if (!deletePart(partsTable.getSelectionModel().getSelectedItem())) {
+            Alert confirm = new Alert(AlertType.CONFIRMATION);
+            confirm.setTitle("Confirm Delete");
+            confirm.setContentText("Are you sure you want to delete this part?");
+            Optional<ButtonType> result = confirm.showAndWait();
+            if (result.get() == ButtonType.OK && !deletePart(partsTable.getSelectionModel().getSelectedItem())) {
                 Alert error = new Alert(AlertType.ERROR);
                 error.setHeaderText("Part Not Deleted!");
                 error.setContentText("The selected part was not found, and could not be deleted.");
@@ -644,7 +646,7 @@ public class Inventory extends Application {
             invLevelCol.setMinWidth(95);
             TableColumn priceCol = new TableColumn("Price/ Cost per Unit");
             priceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
-            priceCol.setMinWidth(135);
+            priceCol.setMinWidth(130);
             productsTable.setMinSize(400, 150);        
             productsTable.getColumns().addAll(productIDCol, productNameCol, invLevelCol, priceCol);
         }
@@ -661,7 +663,7 @@ public class Inventory extends Application {
         } catch(NumberFormatException w) {
             //do nothing
         }
-        if (tmp.size() == 0) {
+        if (tmp.isEmpty()) {
             Alert error = new Alert(AlertType.ERROR);
             error.setHeaderText("No results found with that name/ID.");
             error.showAndWait();
@@ -683,14 +685,29 @@ public class Inventory extends Application {
         addBtn.setOnAction(addEvent);
         Button modifyBtn = new Button("Modify");
         EventHandler<ActionEvent> modEvent = (ActionEvent e) -> {
-            Product p = productsTable.getSelectionModel().getSelectedItem();
-            modifyProductForm(applicationStage, p);
+            try {
+                Product p = productsTable.getSelectionModel().getSelectedItem();
+                modifyProductForm(applicationStage, p);
+            } catch (Exception x) {
+            }
 
         };
         modifyBtn.setOnAction(modEvent);
         Button deleteBtn = new Button("Delete");
         EventHandler<ActionEvent> delEvent = (ActionEvent e) -> {
-            deleteProduct(productsTable.getSelectionModel().getSelectedItem());
+            Alert confirm = new Alert(AlertType.CONFIRMATION);
+            confirm.setTitle("Confirm Delete");
+            confirm.setContentText("Are you sure you want to delete this part?");
+            Optional<ButtonType> result = confirm.showAndWait();
+            if (result.get() == ButtonType.OK && !productsTable.getSelectionModel().getSelectedItem().getAllAssociatedParts().isEmpty()) {
+                Alert error = new Alert(AlertType.ERROR);
+                error.setHeaderText("Product Not Deleted!");
+                error.setContentText("The selected product has associated parts. Please remove all"
+                        + "associated parts before deleting this product.");
+                error.showAndWait();
+            } else if (result.get() == ButtonType.OK) {
+                deleteProduct(productsTable.getSelectionModel().getSelectedItem());
+            }
         };
         deleteBtn.setOnAction(delEvent);
         
@@ -837,24 +854,26 @@ public class Inventory extends Application {
             int tempInv = Integer.parseInt(invField.getText());
             int tempMax = Integer.parseInt(maxField.getText());
             int tempMin = Integer.parseInt(minField.getText());
-            if (tempMax >= tempInv && tempInv >= tempMin) {
-                if (inHouse.isSelected()) {
+            if (inHouse.isSelected()) {
+                if (validateInput(costField.getText(), invField.getText(), 
+                minField.getText(), maxField.getText(), machineField.getText())) {
                     addPart(new InHouse(curID, nameField.getText(), Double.parseDouble(costField.getText()),
                     tempInv, tempMin, tempMax, Integer.parseInt(machineField.getText())));
                     curID++;
                     mainForm(applicationStage);
-                } else if (outsourced.isSelected()) {
+                } else {
+                    addPartForm(applicationStage);
+                }
+            } else if (outsourced.isSelected()) {
+                if (validateInput(costField.getText(), invField.getText(), 
+                minField.getText(), maxField.getText())) {
                     addPart(new Outsourced(curID, nameField.getText(), Double.parseDouble(costField.getText()),
                     tempInv, tempMin, tempMax, machineField.getText()));
                     curID++;
                     mainForm(applicationStage);
+                } else {
+                    addPartForm(applicationStage);
                 }
-            } else {
-                Alert error = new Alert(AlertType.ERROR);
-                error.setHeaderText("Input not valid");
-                error.setContentText("Inventory must be larger than min, and smaller than max.");
-                error.showAndWait();
-                addPartForm(applicationStage);
             }
             
         };
@@ -1015,24 +1034,25 @@ public class Inventory extends Application {
             int tempInv = Integer.parseInt(invField.getText());
             int tempMax = Integer.parseInt(maxField.getText());
             int tempMin = Integer.parseInt(minField.getText());
-            if (tempMax >= tempInv && tempInv >= tempMin) {
-                if (inHouse.isSelected()) {
+            if (inHouse.isSelected()) {
+                    if (validateInput(costField.getText(), invField.getText(), 
+                            minField.getText(), maxField.getText(), machineField.getText())) {
                     updatePart(curPart.getId(), new InHouse(curPart.getId(), nameField.getText(), Double.parseDouble(costField.getText()),
                     tempInv, tempMin, tempMax, Integer.parseInt(machineField.getText())));
                     mainForm(applicationStage);
-                } else if (outsourced.isSelected()) {
+                } else {
+                        modifyPartForm(applicationStage, curPart);
+                    }
+            } else if (outsourced.isSelected()) {
+                if (validateInput(costField.getText(), invField.getText(), 
+                        minField.getText(), maxField.getText(), machineField.getText())) {
                     updatePart(curPart.getId(), new Outsourced(curPart.getId(), nameField.getText(), Double.parseDouble(costField.getText()),
-                    tempInv, tempMin, tempMax, machineField.getText()));
+                            tempInv, tempMin, tempMax, machineField.getText()));
                     mainForm(applicationStage);
+                } else {
+                    modifyPartForm(applicationStage, curPart);
                 }
-            } else {
-                Alert error = new Alert(AlertType.ERROR);
-                error.setHeaderText("Input not valid");
-                error.setContentText("Inventory must be larger than min, and smaller than max.");
-                error.showAndWait();
-                modifyPartForm(applicationStage, curPart);
             }
-            
         };
         saveBtn.setOnAction(event);
         Button cancelBtn = new Button("Cancel");
@@ -1191,22 +1211,24 @@ public class Inventory extends Application {
             int tempInv = Integer.parseInt(invField.getText());
             int tempMax = Integer.parseInt(maxField.getText());
             int tempMin = Integer.parseInt(minField.getText());
-            if (tempMax > tempInv && tempInv > tempMin) {
-                if (inHouse.isSelected()) {
+            if (inHouse.isSelected()) {
+                    if (validateInput(costField.getText(), invField.getText(), 
+                            minField.getText(), maxField.getText(), machineField.getText())) {
                     updatePart(curPart.getId(), new InHouse(curPart.getId(), nameField.getText(), Double.parseDouble(costField.getText()),
                     tempInv, tempMin, tempMax, Integer.parseInt(machineField.getText())));
                     mainForm(applicationStage);
-                } else if (outsourced.isSelected()) {
+                } else {
+                        modifyPartForm(applicationStage, curPart);
+                    }
+            } else if (outsourced.isSelected()) {
+                if (validateInput(costField.getText(), invField.getText(), 
+                        minField.getText(), maxField.getText(), machineField.getText())) {
                     updatePart(curPart.getId(), new Outsourced(curPart.getId(), nameField.getText(), Double.parseDouble(costField.getText()),
-                    tempInv, tempMin, tempMax, machineField.getText()));
+                            tempInv, tempMin, tempMax, machineField.getText()));
                     mainForm(applicationStage);
+                } else {
+                    modifyPartForm(applicationStage, curPart);
                 }
-            } else {
-                Alert error = new Alert(AlertType.ERROR);
-                error.setHeaderText("Input not valid");
-                error.setContentText("Inventory must be larger than min, and smaller than max.");
-                error.showAndWait();
-                modifyPartForm(applicationStage, curPart);
             }
             
         };
@@ -1353,13 +1375,18 @@ public class Inventory extends Application {
         //Create buttoms
         Button removeBtn = new Button("Remove Associated Part");
         EventHandler<ActionEvent> remEvent = (ActionEvent e) -> {
-            p.deleteAssociatedPart(subProductsTable.getSelectionModel().getSelectedItem());
+            Alert confirm = new Alert(AlertType.CONFIRMATION);
+            confirm.setTitle("Confirm Action");
+            confirm.setContentText("Are you sure you want to remove this associated part?");
+            Optional<ButtonType> result = confirm.showAndWait();
+            if (result.get() == ButtonType.OK) {
+                p.deleteAssociatedPart(subProductsTable.getSelectionModel().getSelectedItem());
+            }
         };
         removeBtn.setOnAction(remEvent);
         Button saveBtn = new Button("Save");
         EventHandler<ActionEvent> sveEvent = (ActionEvent e) -> {
-            if (Integer.parseInt(maxField.getText()) >= Integer.parseInt(invField.getText()) &&
-                    Integer.parseInt(invField.getText()) >= Integer.parseInt(minField.getText())) {
+            if (validateInput(priceField.getText(), invField.getText(), minField.getText(), maxField.getText())) {
                 //Get all data and add it to the new part
                 p.setId(curProdID);
                 p.setName(nameField.getText());
@@ -1372,10 +1399,6 @@ public class Inventory extends Application {
                 curProdID++;
                 mainForm(applicationStage);
             } else {
-                Alert error = new Alert(AlertType.ERROR);
-                error.setHeaderText("Input not valid");
-                error.setContentText("Inventory must be larger than min, and smaller than max.");
-                error.showAndWait();
                 addProductForm(applicationStage);
             }
             
@@ -1537,8 +1560,7 @@ public class Inventory extends Application {
         removeBtn.setOnAction(remEvent);
         Button saveBtn = new Button("Save");
         EventHandler<ActionEvent> sveEvent = (ActionEvent e) -> {
-            if (Integer.parseInt(maxField.getText()) >= Integer.parseInt(invField.getText()) &&
-                    Integer.parseInt(invField.getText()) >= Integer.parseInt(minField.getText())) {
+            if (validateInput(priceField.getText(), invField.getText(), minField.getText(), maxField.getText())) {
                 //Get all data and add it to the new part
                 p.setName(nameField.getText());
                 p.setStock(Integer.parseInt(invField.getText()));
@@ -1549,10 +1571,6 @@ public class Inventory extends Application {
                 addProduct(p);
                 mainForm(applicationStage);
             } else {
-                Alert error = new Alert(AlertType.ERROR);
-                error.setHeaderText("Input not valid");
-                error.setContentText("Inventory must be larger than min, and smaller than max.");
-                error.showAndWait();
                 addProductForm(applicationStage);
             }
             
@@ -1588,6 +1606,30 @@ public class Inventory extends Application {
         applicationStage.show();
     }
     
+    /**
+    * This function validates the input for in-house parts. It checks
+    * that all numeric fields are numeric, and that the inventory
+    * is greater than or equal to the min, and less than or equal to the
+    * max.
+    * <p>
+    * If the inventory level is incorrect, it will specifically mention
+    * that in the error message. Otherwise, it will tell the user to make
+    * sure that the inventory, price, max, and min fields are all numeric.
+    * <p>
+    * FUTURE ENHANCEMENT: Give a more specific error as to which input threw the
+    * exception.
+    * <p>
+    * RUNTIME ERROR: I originally had it the inventory checking using greater than or equal to
+    * and less than or equal to, but I realized that the way I wrote the function,
+    * I didn't need the "or equal to" portion, so I dropped it.
+    *
+    * @param  price         the price string that should convert to a double
+    * @param  stock         the inventory string that should convert to an int
+    * @param min            the inventory min that should convert to an int
+    * @param max            the inventory max that should convert to an int
+    * @param machineId      the machine id that should convert to an int
+    * @return true if all inputs are valid, false if there is an input not valid
+    */
     public boolean validateInput(String price, String stock, String min, String max, String machineId) {
         try {
             double DPrice = Double.parseDouble(price);
@@ -1597,16 +1639,47 @@ public class Inventory extends Application {
             int IMachineId = Integer.parseInt(machineId);
             
             if (IStock > IMax || IStock < IMin) {
+                Alert error = new Alert(AlertType.ERROR);
+                error.setHeaderText("Input not valid");
+                error.setContentText("Inventory must be larger than min, and smaller than max.");
+                error.showAndWait();
                 return false;
             } else {
                 return true;
             }
         } catch (Exception e) {
-            //Print Alert
+           Alert error = new Alert(AlertType.ERROR);
+                error.setHeaderText("Input not valid");
+                error.setContentText("Please verify that only numbers have been entered in the"
+                        + " Inv, Price, Max, Min, and Machine ID fields.");
+                error.showAndWait();
             return false;
         }
     }
     
+    /**
+    * This function validates the input for outsourced parts and products. It checks
+    * that all numeric fields are numeric, and that the inventory
+    * is greater than or equal to the min, and less than or equal to the
+    * max.
+    * <p>
+    * If the inventory level is incorrect, it will specifically mention
+    * that in the error message. Otherwise, it will tell the user to make
+    * sure that the inventory, price, max, and min fields are all numeric.
+    * <p>
+    * FUTURE ENHANCEMENT: Give a more specific error as to which input threw the
+    * exception.
+    * <p>
+    * RUNTIME ERROR: I originally had it the inventory checking using greater than or equal to
+    * and less than or equal to, but I realized that the way I wrote the function,
+    * I didn't need the "or equal to" portion, so I dropped it.
+    *
+    * @param  price         the price string that should convert to a double
+    * @param  stock         the inventory string that should convert to an int
+    * @param min            the inventory min that should convert to an int
+    * @param max            the inventory max that should convert to an int
+    * @return true if all inputs are valid, false if there is an input not valid
+    */
     public boolean validateInput(String price, String stock, String min, String max) {
         try {
             double DPrice = Double.parseDouble(price);
@@ -1615,12 +1688,20 @@ public class Inventory extends Application {
             int IMax = Integer.parseInt(max);
             
             if (IStock > IMax || IStock < IMin) {
+                Alert error = new Alert(AlertType.ERROR);
+                error.setHeaderText("Input not valid");
+                error.setContentText("Inventory must be larger than min, and smaller than max.");
+                error.showAndWait();
                 return false;
             } else {
                 return true;
             }
         } catch (Exception e) {
-            //Print alert
+            Alert error = new Alert(AlertType.ERROR);
+                error.setHeaderText("Input not valid");
+                error.setContentText("Please verify that only numbers have been entered in the"
+                        + " Inv, Price, Max, and Min fields.");
+                error.showAndWait();
             return false;
         }
     }
