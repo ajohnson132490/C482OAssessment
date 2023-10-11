@@ -128,7 +128,7 @@ public class Inventory extends Application {
     * @return the part whose id is productId
     */
     public static Product lookupProduct(int productId) {
-        for (int i = 0; i > allProducts.size(); i++) {
+        for (int i = 0; i < allProducts.size(); i++) {
             if (allProducts.get(i).getId() == productId) {
                 return allProducts.get(i);
             }
@@ -152,7 +152,7 @@ public class Inventory extends Application {
     */
     public static ObservableList<Product> lookupProduct(String productName) {
         ObservableList<Product> tmp = FXCollections.observableArrayList();
-        for (int i = 0; i > allProducts.size(); i++) {
+        for (int i = 0; i < allProducts.size(); i++) {
             if (allProducts.get(i).getName().contains(productName)) {
                 tmp.add(allProducts.get(i));
             }
@@ -467,6 +467,8 @@ public class Inventory extends Application {
                 error.setHeaderText("Part Not Deleted!");
                 error.setContentText("The selected part was not found, and could not be deleted.");
                 error.showAndWait();
+            } else {
+                mainForm(applicationStage);
             }
         };
         deleteBtn.setOnAction(delEvent);
@@ -562,7 +564,7 @@ public class Inventory extends Application {
             error.setHeaderText("No results found with that name/ID.");
             error.showAndWait();
         }
-        partsTable.setItems(tmp);
+        subPartsTable.setItems(tmp);
         };
         searchBtn.setOnAction(searchEvent);
         
@@ -664,9 +666,11 @@ public class Inventory extends Application {
             //do nothing
         }
         if (tmp.isEmpty()) {
-            Alert error = new Alert(AlertType.ERROR);
-            error.setHeaderText("No results found with that name/ID.");
-            error.showAndWait();
+            if (!search.getText().equalsIgnoreCase("")) {
+                Alert error = new Alert(AlertType.ERROR);
+                error.setHeaderText("No results found with that name/ID.");
+                error.showAndWait();
+            }
         }
         productsTable.setItems(tmp);
         };
@@ -851,14 +855,14 @@ public class Inventory extends Application {
         lower.setPadding(new Insets(0, 0, 0, 250));
         Button saveBtn = new Button("Save");
         EventHandler<ActionEvent> event = (ActionEvent e) -> {
-            int tempInv = Integer.parseInt(invField.getText());
-            int tempMax = Integer.parseInt(maxField.getText());
-            int tempMin = Integer.parseInt(minField.getText());
             if (inHouse.isSelected()) {
+                System.out.println("Try validating");
                 if (validateInput(costField.getText(), invField.getText(), 
                 minField.getText(), maxField.getText(), machineField.getText())) {
+                    System.out.println("Success!");
                     addPart(new InHouse(curID, nameField.getText(), Double.parseDouble(costField.getText()),
-                    tempInv, tempMin, tempMax, Integer.parseInt(machineField.getText())));
+                    Integer.parseInt(invField.getText()), Integer.parseInt(minField.getText()), 
+                            Integer.parseInt(maxField.getText()), Integer.parseInt(machineField.getText())));
                     curID++;
                     mainForm(applicationStage);
                 } else {
@@ -868,7 +872,8 @@ public class Inventory extends Application {
                 if (validateInput(costField.getText(), invField.getText(), 
                 minField.getText(), maxField.getText())) {
                     addPart(new Outsourced(curID, nameField.getText(), Double.parseDouble(costField.getText()),
-                    tempInv, tempMin, tempMax, machineField.getText()));
+                    Integer.parseInt(invField.getText()), Integer.parseInt(minField.getText()), 
+                            Integer.parseInt(maxField.getText()), machineField.getText()));
                     curID++;
                     mainForm(applicationStage);
                 } else {
@@ -932,6 +937,7 @@ public class Inventory extends Application {
         final ToggleGroup group = new ToggleGroup();
         RadioButton inHouse = new RadioButton("In-House");
         inHouse.setToggleGroup(group);
+        inHouse.setSelected(true);
         RadioButton outsourced = new RadioButton("Outsourced");
         outsourced.setToggleGroup(group);
         upper.getChildren().addAll(title, inHouse, outsourced);
@@ -1031,14 +1037,12 @@ public class Inventory extends Application {
         lower.setPadding(new Insets(0, 0, 0, 250));
         Button saveBtn = new Button("Save");
         EventHandler<ActionEvent> event = (ActionEvent e) -> {
-            int tempInv = Integer.parseInt(invField.getText());
-            int tempMax = Integer.parseInt(maxField.getText());
-            int tempMin = Integer.parseInt(minField.getText());
             if (inHouse.isSelected()) {
                     if (validateInput(costField.getText(), invField.getText(), 
                             minField.getText(), maxField.getText(), machineField.getText())) {
                     updatePart(curPart.getId(), new InHouse(curPart.getId(), nameField.getText(), Double.parseDouble(costField.getText()),
-                    tempInv, tempMin, tempMax, Integer.parseInt(machineField.getText())));
+                    Integer.parseInt(invField.getText()), Integer.parseInt(minField.getText()), 
+                            Integer.parseInt(maxField.getText()), Integer.parseInt(machineField.getText())));
                     mainForm(applicationStage);
                 } else {
                         modifyPartForm(applicationStage, curPart);
@@ -1047,7 +1051,8 @@ public class Inventory extends Application {
                 if (validateInput(costField.getText(), invField.getText(), 
                         minField.getText(), maxField.getText(), machineField.getText())) {
                     updatePart(curPart.getId(), new Outsourced(curPart.getId(), nameField.getText(), Double.parseDouble(costField.getText()),
-                            tempInv, tempMin, tempMax, machineField.getText()));
+                            Integer.parseInt(invField.getText()), Integer.parseInt(minField.getText()), 
+                            Integer.parseInt(maxField.getText()), machineField.getText()));
                     mainForm(applicationStage);
                 } else {
                     modifyPartForm(applicationStage, curPart);
@@ -1111,6 +1116,7 @@ public class Inventory extends Application {
         inHouse.setToggleGroup(group);
         RadioButton outsourced = new RadioButton("Outsourced");
         outsourced.setToggleGroup(group);
+        outsourced.setSelected(true);
         upper.getChildren().addAll(title, inHouse, outsourced);
         
         ///GridPane of information
@@ -1158,7 +1164,7 @@ public class Inventory extends Application {
         infoPane.add(maxField, 1, 4);
         infoPane.add(min, 2, 4);
         infoPane.add(minField, 3, 4);
-        infoPane.add(machine, 0, 5);
+        infoPane.add(company, 0, 5);
         infoPane.add(machineField, 1, 5);
         
         //Check for inhouse or outsourced change
@@ -1555,7 +1561,13 @@ public class Inventory extends Application {
         //Create buttoms
         Button removeBtn = new Button("Remove Associated Part");
         EventHandler<ActionEvent> remEvent = (ActionEvent e) -> {
-            p.deleteAssociatedPart(subProductsTable.getSelectionModel().getSelectedItem());
+            Alert confirm = new Alert(AlertType.CONFIRMATION);
+            confirm.setTitle("Confirm Action");
+            confirm.setContentText("Are you sure you want to remove this associated part?");
+            Optional<ButtonType> result = confirm.showAndWait();
+            if (result.get() == ButtonType.OK) {
+                p.deleteAssociatedPart(subProductsTable.getSelectionModel().getSelectedItem());
+            }
         };
         removeBtn.setOnAction(remEvent);
         Button saveBtn = new Button("Save");
@@ -1633,12 +1645,51 @@ public class Inventory extends Application {
     public boolean validateInput(String price, String stock, String min, String max, String machineId) {
         try {
             double DPrice = Double.parseDouble(price);
+            } catch (Exception e) {
+           Alert error = new Alert(AlertType.ERROR);
+                error.setHeaderText("Input not valid");
+                error.setContentText("Please verify a number has been entered in the PRICE field.");
+                error.showAndWait();
+            return false;
+        }
+        try {
             int IStock = Integer.parseInt(stock);
+            } catch (Exception e) {
+           Alert error = new Alert(AlertType.ERROR);
+                error.setHeaderText("Input not valid");
+                error.setContentText("Please verify that a number has been entered in the INV field");
+                error.showAndWait();
+            return false;
+        }
+        try {
             int IMin = Integer.parseInt(min);
+            } catch (Exception e) {
+           Alert error = new Alert(AlertType.ERROR);
+                error.setHeaderText("Input not valid");
+                error.setContentText("Please verify that a number has been entered in the MIN field.");
+                error.showAndWait();
+            return false;
+        }
+        try {
             int IMax = Integer.parseInt(max);
+            } catch (Exception e) {
+           Alert error = new Alert(AlertType.ERROR);
+                error.setHeaderText("Input not valid");
+                error.setContentText("Please verify that a number has been entered in the MAX field.");
+                error.showAndWait();
+            return false;
+        }
+        try {
             int IMachineId = Integer.parseInt(machineId);
+            } catch (Exception e) {
+           Alert error = new Alert(AlertType.ERROR);
+                error.setHeaderText("Input not valid");
+                error.setContentText("Please verify that a number has been entered in the MACHINE ID field.");
+                error.showAndWait();
+            return false;
+        }
             
-            if (IStock > IMax || IStock < IMin) {
+            if (Integer.parseInt(stock) > Integer.parseInt(max) || Integer.parseInt(stock) < Integer.parseInt(min)) {
                 Alert error = new Alert(AlertType.ERROR);
                 error.setHeaderText("Input not valid");
                 error.setContentText("Inventory must be larger than min, and smaller than max.");
@@ -1647,14 +1698,6 @@ public class Inventory extends Application {
             } else {
                 return true;
             }
-        } catch (Exception e) {
-           Alert error = new Alert(AlertType.ERROR);
-                error.setHeaderText("Input not valid");
-                error.setContentText("Please verify that only numbers have been entered in the"
-                        + " Inv, Price, Max, Min, and Machine ID fields.");
-                error.showAndWait();
-            return false;
-        }
     }
     
     /**
@@ -1683,11 +1726,41 @@ public class Inventory extends Application {
     public boolean validateInput(String price, String stock, String min, String max) {
         try {
             double DPrice = Double.parseDouble(price);
+            } catch (Exception e) {
+           Alert error = new Alert(AlertType.ERROR);
+                error.setHeaderText("Input not valid");
+                error.setContentText("Please verify a number has been entered in the PRICE field.");
+                error.showAndWait();
+            return false;
+        }
+        try {
             int IStock = Integer.parseInt(stock);
+            } catch (Exception e) {
+           Alert error = new Alert(AlertType.ERROR);
+                error.setHeaderText("Input not valid");
+                error.setContentText("Please verify that a number has been entered in the INV field");
+                error.showAndWait();
+            return false;
+        }
+        try {
             int IMin = Integer.parseInt(min);
+            } catch (Exception e) {
+           Alert error = new Alert(AlertType.ERROR);
+                error.setHeaderText("Input not valid");
+                error.setContentText("Please verify that a number has been entered in the MIN field.");
+                error.showAndWait();
+            return false;
+        }
+        try {
             int IMax = Integer.parseInt(max);
-            
-            if (IStock > IMax || IStock < IMin) {
+            } catch (Exception e) {
+           Alert error = new Alert(AlertType.ERROR);
+                error.setHeaderText("Input not valid");
+                error.setContentText("Please verify that a number has been entered in the MAX field.");
+                error.showAndWait();
+            return false;
+        }   
+            if (Integer.parseInt(stock) > Integer.parseInt(max) || Integer.parseInt(stock) < Integer.parseInt(min)) {
                 Alert error = new Alert(AlertType.ERROR);
                 error.setHeaderText("Input not valid");
                 error.setContentText("Inventory must be larger than min, and smaller than max.");
@@ -1696,15 +1769,5 @@ public class Inventory extends Application {
             } else {
                 return true;
             }
-        } catch (Exception e) {
-            Alert error = new Alert(AlertType.ERROR);
-                error.setHeaderText("Input not valid");
-                error.setContentText("Please verify that only numbers have been entered in the"
-                        + " Inv, Price, Max, and Min fields.");
-                error.showAndWait();
-            return false;
-        }
     }
-    
-    
 }
