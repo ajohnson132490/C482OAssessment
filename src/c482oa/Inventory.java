@@ -1049,7 +1049,7 @@ public class Inventory extends Application {
                     }
             } else if (outsourced.isSelected()) {
                 if (validateInput(costField.getText(), invField.getText(), 
-                        minField.getText(), maxField.getText(), machineField.getText())) {
+                        minField.getText(), maxField.getText())) {
                     updatePart(curPart.getId(), new Outsourced(curPart.getId(), nameField.getText(), Double.parseDouble(costField.getText()),
                             Integer.parseInt(invField.getText()), Integer.parseInt(minField.getText()), 
                             Integer.parseInt(maxField.getText()), machineField.getText()));
@@ -1214,23 +1214,20 @@ public class Inventory extends Application {
         lower.setPadding(new Insets(0, 0, 0, 250));
         Button saveBtn = new Button("Save");
         EventHandler<ActionEvent> event = (ActionEvent e) -> {
-            int tempInv = Integer.parseInt(invField.getText());
-            int tempMax = Integer.parseInt(maxField.getText());
-            int tempMin = Integer.parseInt(minField.getText());
             if (inHouse.isSelected()) {
                     if (validateInput(costField.getText(), invField.getText(), 
                             minField.getText(), maxField.getText(), machineField.getText())) {
                     updatePart(curPart.getId(), new InHouse(curPart.getId(), nameField.getText(), Double.parseDouble(costField.getText()),
-                    tempInv, tempMin, tempMax, Integer.parseInt(machineField.getText())));
+                    Integer.parseInt(invField.getText()), Integer.parseInt(minField.getText()), Integer.parseInt(maxField.getText()), Integer.parseInt(machineField.getText())));
                     mainForm(applicationStage);
                 } else {
                         modifyPartForm(applicationStage, curPart);
                     }
             } else if (outsourced.isSelected()) {
                 if (validateInput(costField.getText(), invField.getText(), 
-                        minField.getText(), maxField.getText(), machineField.getText())) {
+                        minField.getText(), maxField.getText())) {
                     updatePart(curPart.getId(), new Outsourced(curPart.getId(), nameField.getText(), Double.parseDouble(costField.getText()),
-                            tempInv, tempMin, tempMax, machineField.getText()));
+                            Integer.parseInt(invField.getText()), Integer.parseInt(minField.getText()), Integer.parseInt(maxField.getText()), machineField.getText()));
                     mainForm(applicationStage);
                 } else {
                     modifyPartForm(applicationStage, curPart);
@@ -1583,7 +1580,7 @@ public class Inventory extends Application {
                 addProduct(p);
                 mainForm(applicationStage);
             } else {
-                addProductForm(applicationStage);
+                modifyProductForm(applicationStage, p);
             }
             
         };
